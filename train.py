@@ -1,6 +1,5 @@
 import os
 import time
-from tqdm import tqdm
 import torch
 import math
 
@@ -40,7 +39,7 @@ def rollout(model, dataset, opts):
     return torch.cat([
         eval_model_bat(bat)
         for bat
-        in tqdm(DataLoader(dataset, batch_size=opts.eval_batch_size), disable=opts.no_progress_bar)
+        in DataLoader(dataset, batch_size=opts.eval_batch_size)
     ], 0)
 
 
@@ -81,7 +80,7 @@ def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, pr
     model.train()
     set_decode_type(model, "sampling")
 
-    for batch_id, batch in enumerate(tqdm(training_dataloader, disable=opts.no_progress_bar)):
+    for batch_id, batch in enumerate(training_dataloader, disable=opts.no_progress_bar):
 
         train_batch(
             model,
