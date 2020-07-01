@@ -177,8 +177,7 @@ class StateMRTA(NamedTuple):
         # print("Agent taking decision: ", self.robot_taking_decision[0].item())
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
 
-
-        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision.to(dtype=torch.int64)].to(dtype=torch.int64)]
+        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
         # print('Current coordiantes: ',  cur_coords)
         # print('Selected node: ', selected)
         time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
