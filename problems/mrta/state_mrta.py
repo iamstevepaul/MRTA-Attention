@@ -279,7 +279,7 @@ class StateMRTA(NamedTuple):
 
         mask_loc = visited_loc.to(torch.bool) #| exceeds_cap
 
-        robot_taking_decision = self.robot_taking_decision.tolist()
+        robot_taking_decision = self.robot_taking_decision
 
         # Cannot visit the depot if just visited and still unserved nodes
         mask_depot = (self.robots_current_destination[self.ids,robot_taking_decision] == 0) & ((mask_loc == 0).int().sum(-1) > 0)
