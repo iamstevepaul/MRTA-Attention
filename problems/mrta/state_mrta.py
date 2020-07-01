@@ -60,7 +60,7 @@ class StateMRTA(NamedTuple):
     i: torch.Tensor  # Keeps track of step
 
     # VEHICLE_CAPACITY = 1.0  # Hardcoded
-    n_nodes = 40
+    n_nodes = 100
     n_agents = 4
     max_range = 4
     max_capacity = 6
