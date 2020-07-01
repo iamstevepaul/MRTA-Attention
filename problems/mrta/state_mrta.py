@@ -62,8 +62,8 @@ class StateMRTA(NamedTuple):
     # VEHICLE_CAPACITY = 1.0  # Hardcoded
     n_nodes = 40
     n_agents = 4
-    max_range = 2
-    max_capacity = 5
+    max_range = 4
+    max_capacity = 6
     max_speed = 10
 
 
@@ -99,8 +99,8 @@ class StateMRTA(NamedTuple):
         depot = input['depot']
         loc = input['loc']
         n_agents = 4
-        max_range = 2
-        max_capacity = 5
+        max_range = 4
+        max_capacity = 6
         max_speed = 10
         coords = torch.cat((depot[:, None, :], loc), -2)
         distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1)
@@ -126,28 +126,28 @@ class StateMRTA(NamedTuple):
             cur_coord=input['depot'][:, None, :],  # Add step dimension
             i=torch.zeros(1, dtype=torch.int64, device=loc.device),  # Vector with length num_steps
             robots_initial_decision_sequence = torch.from_numpy(np.arange(0, n_agents)),#torch.from_numpy(np.arange(0, n_agents)),
-            robots_task_done_success = torch.zeros((batch_size, n_agents), dtype=torch.uint8),
-            robots_task_missed_deadline = torch.zeros((batch_size, n_agents), dtype=torch.uint8),
-            robots_task_visited = torch.zeros((batch_size, n_agents), dtype=torch.uint8),
+            robots_task_done_success = torch.zeros((batch_size, n_agents), dtype=torch.int64),
+            robots_task_missed_deadline = torch.zeros((batch_size, n_agents), dtype=torch.int64),
+            robots_task_visited = torch.zeros((batch_size, n_agents), dtype=torch.int64),
             robots_distance_travelled  = torch.zeros((batch_size, n_agents), dtype=torch.float),
             robots_next_decision_time =  torch.zeros((batch_size, n_agents), dtype=torch.float),
             robots_range_remaining = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float), max_range),
             robots_capacity = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float), max_capacity),
             current_time = torch.zeros((batch_size, 1), dtype=torch.float),
-            robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.uint8),
+            robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.int64),
             next_decision_time = torch.zeros((batch_size, 1), dtype=torch.float),
             previous_decision_time = torch.zeros((batch_size, 1), dtype=torch.float),
-            tasks_done_success = torch.zeros((batch_size, 1), dtype=torch.uint8),
-            tasks_missed_deadline = torch.zeros((batch_size, 1), dtype=torch.uint8),
-            tasks_visited = torch.zeros((batch_size, 1), dtype=torch.uint8),
-            is_done = torch.zeros((batch_size, 1), dtype=torch.uint8),
+            tasks_done_success = torch.zeros((batch_size, 1), dtype=torch.int64),
+            tasks_missed_deadline = torch.zeros((batch_size, 1), dtype=torch.int64),
+            tasks_visited = torch.zeros((batch_size, 1), dtype=torch.int64),
+            is_done = torch.zeros((batch_size, 1), dtype=torch.int64),
             distance_matrix = distance_matrix,
             time_matrix = time_matrix,
             deadline = deadline,
-            robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.uint8),
-            robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.uint8),
+            robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64),
+            robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float), max_range),
-            depot = torch.zeros((batch_size, 1), dtype=torch.uint8)
+            depot = torch.zeros((batch_size, 1), dtype=torch.int64)
             # n_nodes = n_nodes
         )
 
@@ -160,6 +160,7 @@ class StateMRTA(NamedTuple):
         return len
 
     def update(self, selected):
+        # print('************** New decision **************')
         selected = selected[:, None]  # Add dimension for step
         prev_a = selected
 
@@ -174,52 +175,35 @@ class StateMRTA(NamedTuple):
 
         # print('Current time: ', current_time[0].item())
         # print("Agent taking decision: ", self.robot_taking_decision[0].item())
-        # print('Agent decision taking time: ', self.robots_next_decision_time[0, self.robot_taking_decision[0].item()].item())
-        # print('Envt decision time: ', self.next_decision_time[0].item())
-        # print('Previous decision time: ', self.previous_decision_time[0].item())
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
-        # print('Agent start point: ', self.robots_start_point[0, robot_taking_decision[0].item()].item())
-        # print('Agent current destination: ', self.robots_current_destination[0, robot_taking_decision[0].item()].item())
-        # print('Agent current capacity', self.robots_capacity[0, robot_taking_decision[0].item()].item())
-        # print('Current node deadline: ', self.deadline[0, self.robots_current_destination[0, robot_taking_decision[0].item()].item() -1].item())
-        # print('Selected action:', selected[0].item())
-        # new_dist = self.distance_matrix[0, self.robots_current_destination[0, robot_taking_decision[0].item()].item(), selected[0].item()].item()
-        # print('Distance to selected node: ', new_dist)
-        # print('Robot next decision taking time: ',self.robots_next_decision_time[0, self.robot_taking_decision[0].item()] + self.time_matrix[
-        #         0, self.robots_current_destination[0, robot_taking_decision[0].item()].item(), selected[
-        #             0].item()].item())
-        # print('Tasks visited: ', self.tasks_visited[0].item())
 
-        # print(selected)
+        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        # print('Current coordiantes: ',  cur_coords)
+        # print('Selected node: ', selected)
+        time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
+        # print('Time for journey: ', time)
+        self.robots_next_decision_time[self.ids, self.robot_taking_decision] += time
+        # print('Robots next decision time: ', self.robots_next_decision_time)
+        self.robots_distance_travelled[self.ids, self.robot_taking_decision] += self.distance_matrix[
+            self.ids, self.robots_current_destination[self.ids, robot_taking_decision], selected]
 
-        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision.to(dtype=torch.int64)].to(dtype=torch.int64)]
-
-        # update the capacity if its before the deadline
         for id in self.ids:
 
-            time = self.time_matrix[
-                id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[
-                    id].item()].item()
-
-            self.robots_next_decision_time[id, self.robot_taking_decision[id].item()] += time
-
-            # self.robots_distance_travelled[id, self.robot_taking_decision[id].item()] += self.distance_matrix[
-            #     id, self.robots_start_point[id, robot_taking_decision[id].item()].item(),
-            #     self.robots_current_destination[id, robot_taking_decision[id].item()].item()].item()
-            self.robots_distance_travelled[id, self.robot_taking_decision[id].item()] += self.distance_matrix[
-                id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[id].item()].item()
-
-            # if self.robots_current_destination[id, robot_taking_decision[id].item()].item() == 0:
             if selected[id].item() == 0:
+                # print('Agent ', self.robot_taking_decision.item(), ' going to depot.')
+                # print('Capacity and range will br renewed')
                 self.robots_capacity[id, self.robot_taking_decision[id].item()] = self.max_capacity
                 robots_range_remaining[id, robot_taking_decision[id].item()] = self.max_range
             else:
                 robots_range_remaining[id, robot_taking_decision[id].item()] -= self.distance_matrix[
                     id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[
                         id].item()].item()
-
+                # print('Robot new range: ', robots_range_remaining[id, robot_taking_decision[id].item()])
                 if self.deadline[id, selected[id].item() -1].item() > self.robots_next_decision_time[id, self.robot_taking_decision[id].item()]:
+                    # print('Previous capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
                     self.robots_capacity[id, self.robot_taking_decision[id].item()] -= 1
+                    # print('New capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
+                    # print('All capacities: ', self.robots_capacity)
                     self.tasks_done_success[id] += 1
 
                 else:
@@ -227,22 +211,18 @@ class StateMRTA(NamedTuple):
 
                 self.tasks_visited[id] += 1
 
-
-            # print('Robot new range: ', robots_range_remaining[id, robot_taking_decision[id].item()].item())
-            self.robots_start_point[id, self.robot_taking_decision[id].item()] = self.robots_current_destination[id, self.robot_taking_decision[id].item()].item()
-            # print('Robot new start point: ', self.robots_start_point[id, self.robot_taking_decision[id].item()].item())
-            self.robots_current_destination[id, self.robot_taking_decision[id].item()] = selected[id].item()
-            # print('Robot new destination: ', self.robots_current_destination[id, self.robot_taking_decision[id].item()].item())
-            # print('New decision times: ', self.robots_next_decision_time)
+        # print('New range: ', robots_range_remaining)
+        # print('Missed tasks: ', self.tasks_missed_deadline.item())
+        # print('Succesful tasks: ', self.tasks_done_success.item())
+        # print('Tasks visited: ', self.tasks_visited.item())
+        self.robots_start_point[self.ids, self.robot_taking_decision] = self.robots_current_destination[
+            self.ids, self.robot_taking_decision]
+        self.robots_current_destination[self.ids, self.robot_taking_decision] = selected
 
         sorted_time, indices = torch.sort(self.robots_next_decision_time)
-        # print('Next decision time: ', sorted_time[0,0].item())
-        # print('Agent taking next decision: ', indices[0,0].item())
         robot_taking_decision_range = self.robot_taking_decision_range
-        for id in self.ids:
-            robot_taking_decision_range[id] = robots_range_remaining[id, indices[id, 0].item()].item()
-        # print('Range of robot taking next decision: ',robot_taking_decision_range[0].item())
-        # print('All ranges: ', robots_range_remaining[0])
+
+        robot_taking_decision_range = robots_range_remaining[self.ids, indices[self.ids, 0]]
 
         if self.visited_.dtype == torch.uint8:
             # Note: here we do not subtract one as we have to scatter so the first column allows scattering depot
@@ -258,7 +238,6 @@ class StateMRTA(NamedTuple):
         #     selected[:, None].expand(selected.size(0), 1, self.coords.size(-1))
         # )[:, 0, :]
         lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
-        # print('Total length: ', lengths[0].item())
         visited_[:,:,0] = 0
 
 
@@ -293,7 +272,6 @@ class StateMRTA(NamedTuple):
         Forbids to visit depot twice in a row, unless all nodes have been visited
         :return:
         """
-
         if self.visited_.dtype == torch.uint8:
             visited_loc = self.visited_[:, :, 1:]
         else:
@@ -306,11 +284,12 @@ class StateMRTA(NamedTuple):
         # Cannot visit the depot if just visited and still unserved nodes
         mask_depot = (self.robots_current_destination[self.ids,robot_taking_decision] == 0) & ((mask_loc == 0).int().sum(-1) > 0)
         full_mask = torch.cat((mask_depot[:, :, None], mask_loc), -1)
+        robot_taking_decision = self.robot_taking_decision
+        capacity = self.robots_capacity[self.ids, robot_taking_decision]
         for id in self.ids:
-            robot_taking_decision = self.robot_taking_decision
-            capacity = self.robots_capacity[id, robot_taking_decision[id].item()].item()
-            if capacity < 1:
-                full_mask[id, 1:, :] = True
+
+            if capacity[id].item() < 1:
+                full_mask[id, :, 1:] = True
             else:
                 avail_range = self.robots_range_remaining[id, robot_taking_decision[id].item()].item()
                 robot_dest = self.robots_current_destination[id, robot_taking_decision[id].item()].item()
