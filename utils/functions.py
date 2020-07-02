@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import os
 import json
-from tqdm import tqdm
+# from tqdm import tqdm
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import Pool
 import torch.nn.functional as F
@@ -143,7 +143,7 @@ def run_all_in_pool(func, directory, dataset, opts, use_multiprocessing=True):
     ds = dataset[offset:(offset + opts.n if opts.n is not None else len(dataset))]
     pool_cls = (Pool if use_multiprocessing and num_cpus > 1 else ThreadPool)
     with pool_cls(num_cpus) as pool:
-        results = list(tqdm(pool.imap(
+        results = list(pool.imap(
             func,
             [
                 (
@@ -153,7 +153,7 @@ def run_all_in_pool(func, directory, dataset, opts, use_multiprocessing=True):
                 )
                 for i, problem in enumerate(ds)
             ]
-        ), total=len(ds), mininterval=opts.progress_bar_mininterval))
+        ), total=len(ds), mininterval=opts.progress_bar_mininterval)
 
     failed = [str(i + offset) for i, res in enumerate(results) if res is None]
     assert len(failed) == 0, "Some instances failed: {}".format(" ".join(failed))
