@@ -102,9 +102,9 @@ class StateMRTA(NamedTuple):
         max_range = 4
         max_capacity = 6
         max_speed = 10
-        coords = torch.cat((depot[:, None, :], loc), -2)
-        distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1)
-        time_matrix = torch.mul(distance_matrix, (1/max_speed))
+        coords = torch.cat((depot[:, None, :], loc), -2).to(device=loc.device)
+        distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1).to(device=loc.device)
+        time_matrix = torch.mul(distance_matrix, (1/max_speed)).to(device=loc.device)
         deadline = input['deadline']
         # n_nodes = torch.tensor(loc.size()[1], dtype=torch.uint8)
 
@@ -125,22 +125,22 @@ class StateMRTA(NamedTuple):
             lengths=torch.zeros(batch_size, 1, device=loc.device),
             cur_coord=input['depot'][:, None, :],  # Add step dimension
             i=torch.zeros(1, dtype=torch.int64, device=loc.device),  # Vector with length num_steps
-            robots_initial_decision_sequence = torch.from_numpy(np.arange(0, n_agents)),#torch.from_numpy(np.arange(0, n_agents)),
-            robots_task_done_success = torch.zeros((batch_size, n_agents), dtype=torch.int64),
-            robots_task_missed_deadline = torch.zeros((batch_size, n_agents), dtype=torch.int64),
-            robots_task_visited = torch.zeros((batch_size, n_agents), dtype=torch.int64),
-            robots_distance_travelled  = torch.zeros((batch_size, n_agents), dtype=torch.float),
-            robots_next_decision_time =  torch.zeros((batch_size, n_agents), dtype=torch.float),
-            robots_range_remaining = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float), max_range),
-            robots_capacity = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float), max_capacity),
-            current_time = torch.zeros((batch_size, 1), dtype=torch.float),
-            robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.int64),
-            next_decision_time = torch.zeros((batch_size, 1), dtype=torch.float),
-            previous_decision_time = torch.zeros((batch_size, 1), dtype=torch.float),
-            tasks_done_success = torch.zeros((batch_size, 1), dtype=torch.int64),
-            tasks_missed_deadline = torch.zeros((batch_size, 1), dtype=torch.int64),
-            tasks_visited = torch.zeros((batch_size, 1), dtype=torch.int64),
-            is_done = torch.zeros((batch_size, 1), dtype=torch.int64),
+            robots_initial_decision_sequence = torch.from_numpy(np.arange(0, n_agents)).to(device=loc.device),#torch.from_numpy(np.arange(0, n_agents)),
+            robots_task_done_success = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robots_task_missed_deadline = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robots_task_visited = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robots_distance_travelled  = torch.zeros((batch_size, n_agents), dtype=torch.float, device=loc.device),
+            robots_next_decision_time =  torch.zeros((batch_size, n_agents), dtype=torch.float, device=loc.device),
+            robots_range_remaining = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float, device=loc.device), max_range),
+            robots_capacity = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float, device=loc.device), max_capacity),
+            current_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
+            robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
+            next_decision_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
+            previous_decision_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
+            tasks_done_success = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
+            tasks_missed_deadline = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
+            tasks_visited = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
+            is_done = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             distance_matrix = distance_matrix,
             time_matrix = time_matrix,
             deadline = deadline,

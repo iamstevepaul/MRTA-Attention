@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="" />
+    <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slurm_mrta_att" beforeDir="false" afterPath="$PROJECT_DIR$/slurm_mrta_att" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,42 +82,42 @@
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state x="603" y="156" key="#run/0.0.1792.1120@0.0.1792.1120" timestamp="1593572800391" />
-    <state x="948" y="244" key="#xdebugger.evaluate" timestamp="1593632670318">
+    <state x="948" y="244" key="#xdebugger.evaluate" timestamp="1593724218363">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="948" y="244" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1593632670318" />
-    <state width="1771" height="256" key="GridCell.Tab.0.bottom" timestamp="1593702615077">
+    <state x="948" y="244" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1593724218363" />
+    <state width="1771" height="367" key="GridCell.Tab.0.bottom" timestamp="1593724683935">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615077" />
-    <state width="1771" height="256" key="GridCell.Tab.0.center" timestamp="1593702615076">
+    <state width="1771" height="367" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683935" />
+    <state width="1771" height="367" key="GridCell.Tab.0.center" timestamp="1593724683934">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615076" />
-    <state width="1771" height="256" key="GridCell.Tab.0.left" timestamp="1593702615075">
+    <state width="1771" height="367" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683934" />
+    <state width="1771" height="367" key="GridCell.Tab.0.left" timestamp="1593724683933">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615075" />
-    <state width="1771" height="256" key="GridCell.Tab.0.right" timestamp="1593702615077">
+    <state width="1771" height="367" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683933" />
+    <state width="1771" height="367" key="GridCell.Tab.0.right" timestamp="1593724683934">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615077" />
-    <state width="1771" height="256" key="GridCell.Tab.1.bottom" timestamp="1593702615079">
+    <state width="1771" height="367" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683934" />
+    <state width="1771" height="367" key="GridCell.Tab.1.bottom" timestamp="1593724683936">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615079" />
-    <state width="1771" height="256" key="GridCell.Tab.1.center" timestamp="1593702615078">
+    <state width="1771" height="367" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683936" />
+    <state width="1771" height="367" key="GridCell.Tab.1.center" timestamp="1593724683936">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615078" />
-    <state width="1771" height="256" key="GridCell.Tab.1.left" timestamp="1593702615078">
+    <state width="1771" height="367" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683936" />
+    <state width="1771" height="367" key="GridCell.Tab.1.left" timestamp="1593724683935">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615078" />
-    <state width="1771" height="256" key="GridCell.Tab.1.right" timestamp="1593702615078">
+    <state width="1771" height="367" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683935" />
+    <state width="1771" height="367" key="GridCell.Tab.1.right" timestamp="1593724683936">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="256" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1593702615078" />
+    <state width="1771" height="367" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1593724683936" />
     <state x="397" y="199" key="SettingsEditor" timestamp="1593538674373">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
@@ -122,5 +126,21 @@
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="896" height="560" key="XDebugger.FullValuePopup/0.0.1792.1120@0.0.1792.1120" timestamp="1593621020185" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/run.py</url>
+          <line>73</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/nets/attention_model.py</url>
+          <line>414</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

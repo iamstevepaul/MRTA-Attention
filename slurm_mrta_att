@@ -3,7 +3,7 @@
 #SBATCH --partition=scavenger
 #SBATCH --qos=scavenger
 #SBATCH --nodes=1
-##SBATCH --gres=gpu:tesla_p100-pcie-16gb
+#SBATCH --gres=gpu:tesla_p100-pcie-16gb
 #SBATCH --job-name="mrta_att_stevepau"
 #SBATCH --output=output_mrta.out
 #SBATCH --error=error_mrta.err
