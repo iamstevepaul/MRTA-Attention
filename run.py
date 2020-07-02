@@ -3,10 +3,10 @@
 import os
 import json
 import pprint as pp
-
+import time
 import torch
 import torch.optim as optim
-from tensorboard_logger import Logger as TbLogger
+# from tensorboard_logger import Logger as TbLogger
 
 from options import get_options
 from train import train_epoch, validate, get_inner_model
@@ -26,8 +26,8 @@ def run(opts):
 
     # Optionally configure tensorboard
     tb_logger = None
-    if not opts.no_tensorboard:
-        tb_logger = TbLogger(os.path.join(opts.log_dir, "{}_{}".format(opts.problem, opts.graph_size), opts.run_name))
+    # if not opts.no_tensorboard:
+    #     tb_logger = TbLogger(os.path.join(opts.log_dir, "{}_{}".format(opts.problem, opts.graph_size), opts.run_name))
 
     os.makedirs(opts.save_dir)
     # Save arguments so exact configuration can always be found
@@ -132,6 +132,7 @@ def run(opts):
         validate(model, val_dataset, opts)
     else:
         for epoch in range(opts.epoch_start, opts.epoch_start + opts.n_epochs):
+            start_time = time.time()
             train_epoch(
                 model,
                 optimizer,
@@ -143,6 +144,8 @@ def run(opts):
                 tb_logger,
                 opts
             )
+            total_time = (time.time() - start_time)/60.0
+            print('Epoch: ', epoch, ' time: ', total_time, ' minutes.')
 
 
 if __name__ == "__main__":

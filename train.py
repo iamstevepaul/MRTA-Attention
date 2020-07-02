@@ -1,6 +1,6 @@
 import os
 import time
-from tqdm import tqdm
+# from tqdm import tqdm
 import torch
 import math
 
@@ -40,7 +40,7 @@ def rollout(model, dataset, opts):
     return torch.cat([
         eval_model_bat(bat)
         for bat
-        in tqdm(DataLoader(dataset, batch_size=opts.eval_batch_size), disable=opts.no_progress_bar)
+        in DataLoader(dataset, batch_size=opts.eval_batch_size)
     ], 0)
 
 
@@ -69,19 +69,19 @@ def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, pr
     step = epoch * (opts.epoch_size // opts.batch_size)
     start_time = time.time()
 
-    if not opts.no_tensorboard:
-        tb_logger.log_value('learnrate_pg0', optimizer.param_groups[0]['lr'], step)
+    # if not opts.no_tensorboard:
+    #     tb_logger.log_value('learnrate_pg0', optimizer.param_groups[0]['lr'], step)
 
     # Generate new training data for each epoch
     training_dataset = baseline.wrap_dataset(problem.make_dataset(
         size=opts.graph_size, num_samples=opts.epoch_size, distribution=opts.data_distribution))
-    training_dataloader = DataLoader(training_dataset, batch_size=opts.batch_size, num_workers=4)
+    training_dataloader = DataLoader(training_dataset, batch_size=opts.batch_size, num_workers=1)
 
     # Put model in train mode!
     model.train()
     set_decode_type(model, "sampling")
 
-    for batch_id, batch in enumerate(tqdm(training_dataloader, disable=opts.no_progress_bar)):
+    for batch_id, batch in enumerate(training_dataloader):
 
         train_batch(
             model,
@@ -145,7 +145,6 @@ def train_batch(
 
     # Evaluate baseline, get baseline loss if any (only for critic)
     bl_val, bl_loss = baseline.eval(x, cost) if bl_val is None else (bl_val, 0)
-    print('Max cost: ', max(cost.data))
 
     # Calculate loss
     reinforce_loss = ((cost - bl_val) * log_likelihood).mean()
