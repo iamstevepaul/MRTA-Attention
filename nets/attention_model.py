@@ -412,10 +412,10 @@ class AttentionModel(nn.Module):
                 )
 
         else:
-            print('Embeddings: ', embeddings.is_cuda)
-            print('Current node: ', current_node.is_cuda)
-            print('State time: ', state.current_time.is_cuda)
-            print('State robot taking decision: ', state.robot_taking_decision_range.is_cuda)
+            # print('Embeddings: ', embeddings.is_cuda)
+            # print('Current node: ', current_node.is_cuda)
+            # print('State time: ', state.current_time.is_cuda)
+            # print('State robot taking decision: ', state.robot_taking_decision_range.is_cuda)
             return torch.cat(
                 (
                     torch.gather(
