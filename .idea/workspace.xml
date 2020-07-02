@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/slurm_mrta_att" beforeDir="false" afterPath="$PROJECT_DIR$/slurm_mrta_att" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,21 +124,5 @@
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="896" height="560" key="XDebugger.FullValuePopup/0.0.1792.1120@0.0.1792.1120" timestamp="1593621020185" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/run.py</url>
-          <line>73</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/nets/attention_model.py</url>
-          <line>414</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

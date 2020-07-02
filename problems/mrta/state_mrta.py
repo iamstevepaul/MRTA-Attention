@@ -144,10 +144,10 @@ class StateMRTA(NamedTuple):
             distance_matrix = distance_matrix,
             time_matrix = time_matrix,
             deadline = deadline,
-            robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64),
-            robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64),
-            robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float), max_range),
-            depot = torch.zeros((batch_size, 1), dtype=torch.int64)
+            robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
+            depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device)
             # n_nodes = n_nodes
         )
 
