@@ -34,7 +34,7 @@ conda activate pytorch-1.5-dgl
 #conda install -p /home/stevepau tqdm
 #conda activate tqdm
 #
-CUDA_AVAILABLE_DEVICES=0
+CUDA_VISIBLE_DEVICES=0
 python run.py
 
 echo "***********************************************************************"
