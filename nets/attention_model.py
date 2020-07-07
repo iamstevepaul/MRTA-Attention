@@ -2,9 +2,10 @@ import torch
 from torch import nn
 from torch.utils.checkpoint import checkpoint
 import math
+# from mpi4py import MPI
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
-
+import time
 from nets.graph_encoder import GraphAttentionEncoder
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
@@ -73,6 +74,9 @@ class AttentionModel(nn.Module):
         self.n_heads = n_heads
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
+        # self.comm = MPI.COMM_WORLD
+        # self.size = comm.Get_size()
+        # self.rank = comm.Get_rank()
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -227,18 +231,26 @@ class AttentionModel(nn.Module):
         outputs = []
         sequences = []
 
-        state = self.problem.make_state(input)
+        # loc = self.comm.scatter(input['loc'], root=0)
+        # deopt = self.comm.scatter(input['depot'], root=0)
+        # deadline = self.comm.scatter(input['deadline'], root=0)
+        embeddings_band = embeddings# self.comm.scatter(embeddings, root=0)
+
+        input_band = input# {'loc': loc, 'depot': deopt, 'deadline': deadline}
+
+
+
+        state = self.problem.make_state(input_band)
         # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
-        fixed = self._precompute(embeddings)
+        fixed = self._precompute(embeddings_band)
 
         batch_size = state.ids.size(0)
+        start_time = time.time()
 
 
         # Perform decoding steps
         i = 0
-        # print(state.visited_)
-        # print(state.all_finished().item())
-        # print(state.visited_.all().item())
+        # We get the states from here, and then scatter it to all the processors, do the computation and then return
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
 
             # if self.shrink_size is not None:
@@ -260,6 +272,7 @@ class AttentionModel(nn.Module):
             # print(selected[0].item(), state.robot_taking_decision[0])
 
             state = state.update(selected)
+
             cost = torch.div(state.lengths, state.tasks_done_success)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
@@ -278,7 +291,7 @@ class AttentionModel(nn.Module):
             i += 1
 
         # Collected lists, return Tensor
-
+        print('Time for finishing one batch: ',time.time() - start_time)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):

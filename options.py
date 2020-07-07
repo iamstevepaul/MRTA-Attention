@@ -11,8 +11,8 @@ def get_options(args=None):
     # Data
     parser.add_argument('--problem', default='mrta', help="The problem to solve, default 'tsp'")
     parser.add_argument('--graph_size', type=int, default=100, help="The size of the problem graph")
-    parser.add_argument('--batch_size', type=int, default=200, help='Number of instances per batch during training') # changed
-    parser.add_argument('--epoch_size', type=int, default=50000, help='Number of instances per epoch during training') # changed
+    parser.add_argument('--batch_size', type=int, default=4, help='Number of instances per batch during training') # changed
+    parser.add_argument('--epoch_size', type=int, default=8, help='Number of instances per epoch during training') # changed
     parser.add_argument('--val_size', type=int, default=10000, # changed
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--val_dataset', type=str, default=None, help='Dataset file to use for validation')
@@ -40,7 +40,7 @@ def get_options(args=None):
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--exp_beta', type=float, default=0.8,
                         help='Exponential moving average baseline decay (default 0.8)')
-    parser.add_argument('--baseline', default='rollout',
+    parser.add_argument('--baseline', default=None,
                         help="Baseline to use: 'rollout', 'critic' or 'exponential'. Defaults to no baseline.")
     parser.add_argument('--bl_alpha', type=float, default=0.05,
                         help='Significance in the t-test for updating rollout baseline')

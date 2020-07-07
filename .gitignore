@@ -22,9 +22,11 @@ var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
+outputs/
 *.egg-info/
 .installed.cfg
 *.egg
+*.xml
 MANIFEST
 
 # PyInstaller
@@ -38,6 +40,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+.idea/
 htmlcov/
 .tox/
 .nox/
@@ -51,6 +54,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+
 # Translations
 *.mo
 *.pot
@@ -60,6 +64,7 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
 
 # Flask stuff:
 instance/
@@ -73,6 +78,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
 
 # Jupyter Notebook
 .ipynb_checkpoints
