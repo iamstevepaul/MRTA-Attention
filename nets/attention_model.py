@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.utils.checkpoint import checkpoint
 import math
-# from mpi4py import MPI
+from mpi4py import MPI
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
@@ -74,9 +74,9 @@ class AttentionModel(nn.Module):
         self.n_heads = n_heads
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
-        # self.comm = MPI.COMM_WORLD
-        # self.size = comm.Get_size()
-        # self.rank = comm.Get_rank()
+        self.comm = MPI.COMM_WORLD
+        self.size = comm.Get_size()
+        self.rank = comm.Get_rank()
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -231,12 +231,12 @@ class AttentionModel(nn.Module):
         outputs = []
         sequences = []
 
-        # loc = self.comm.scatter(input['loc'], root=0)
-        # deopt = self.comm.scatter(input['depot'], root=0)
-        # deadline = self.comm.scatter(input['deadline'], root=0)
-        embeddings_band = embeddings# self.comm.scatter(embeddings, root=0)
+        # loc = self.comm.scatter(input['loc'].numpy().astype('float64'), root=0)
+        # deopt = self.comm.scatter(input['depot'].numpy().astype('float64'), root=0)
+        # deadline = self.comm.scatter(input['deadline'].numpy().astype('float64'), root=0)
+        embeddings_band =  embeddings #self.comm.scatter(embeddings.numpy().astype('float64'), root=0)
 
-        input_band = input# {'loc': loc, 'depot': deopt, 'deadline': deadline}
+        input_band = input#{'loc': loc, 'depot': deopt, 'deadline': deadline}
 
 
 
@@ -253,17 +253,6 @@ class AttentionModel(nn.Module):
         # We get the states from here, and then scatter it to all the processors, do the computation and then return
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
 
-            # if self.shrink_size is not None:
-            #     unfinished = torch.nonzero(state.get_finished() == 0)
-            #     if len(unfinished) == 0:
-            #         break
-            #     unfinished = unfinished[:, 0]
-            #     # Check if we can shrink by at least shrink_size and if this leaves at least 16
-            #     # (otherwise batch norm will not work well and it is inefficient anyway)
-            #     if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
-            #         # Filter states
-            #         state = state[unfinished]
-            #         fixed = fixed[unfinished]
 
             log_p, mask = self._get_log_p(fixed, state)
 
@@ -289,7 +278,11 @@ class AttentionModel(nn.Module):
             # print(state.all_finished().item() == 0)
 
             i += 1
+        ops = torch.stack(outputs, 1).numpy().astype('float64')
+        seq = torch.stack(sequences, 1).numpy().astype('float64')
+        cost_np = cost.numpy().astype('float64')
 
+        #### gather operation must be done
         # Collected lists, return Tensor
         print('Time for finishing one batch: ',time.time() - start_time)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
