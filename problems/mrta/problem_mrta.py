@@ -15,6 +15,8 @@ class MRTA(object):
 
     @staticmethod
     def get_costs(dataset, pi):
+        # print('Dataset: ', dataset['loc'].size())
+        # print('Pi: ', pi.size())
         batch_size, graph_size, loc_vec_size = dataset['loc'].size()
         # print(batch_size, graph_size, loc_vec_size)
         # Check that tours are valid, i.e. contain 0 to n -1

@@ -1,8 +1,8 @@
 import torch
+import numpy as np
 from torch import nn
 from torch.utils.checkpoint import checkpoint
 import math
-from mpi4py import MPI
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
@@ -74,9 +74,11 @@ class AttentionModel(nn.Module):
         self.n_heads = n_heads
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
-        self.comm = MPI.COMM_WORLD
-        self.size = comm.Get_size()
-        self.rank = comm.Get_rank()
+        self.rank = None
+        self.comm = None
+        self.batch_size = None
+        self.size = None
+
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -103,10 +105,10 @@ class AttentionModel(nn.Module):
         )
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
-        self.project_node_embeddings = nn.Linear(embedding_dim, 3 * embedding_dim, bias=False)
-        self.project_fixed_context = nn.Linear(embedding_dim, embedding_dim, bias=False)
-        self.project_step_context = nn.Linear(step_context_dim, embedding_dim, bias=False)
-        self.project_context_cur_loc = nn.Linear(2, embedding_dim, bias=False)
+        self.project_node_embeddings = nn.Linear(embedding_dim, 3 * embedding_dim, bias=False).float()
+        self.project_fixed_context = nn.Linear(embedding_dim, embedding_dim, bias=False).float()
+        self.project_step_context = nn.Linear(step_context_dim, embedding_dim, bias=False).float()
+        self.project_context_cur_loc = nn.Linear(2, embedding_dim, bias=False).float()
         assert embedding_dim % n_heads == 0
         # Note n_heads * val_dim == embedding_dim so input to project_out is embedding_dim
         self.project_out = nn.Linear(embedding_dim, embedding_dim, bias=False)
@@ -123,18 +125,68 @@ class AttentionModel(nn.Module):
         using DataParallel as the results may be of different lengths on different GPUs
         :return:
         """
-
-        if self.checkpoint_encoder and self.training:  # Only checkpoint if we need gradients
-            embeddings, _ = checkpoint(self.embedder, self._init_embed(input))
+        if self.rank == 0:
+            if self.checkpoint_encoder and self.training:  # Only checkpoint if we need gradients
+                embeddings, _ = checkpoint(self.embedder, self._init_embed(input))
+            else:
+                embeddings, _ = self.embedder(self._init_embed(input))
         else:
-            embeddings, _ = self.embedder(self._init_embed(input))
-
-        _log_p, pi, cost = self._inner(input, embeddings)
-        cos, mask = self.problem.get_costs(input, pi)
+            embeddings = None
+        total_batch_size = input['loc'].size()[0]
+        graph_size = input['loc'].size()[1]
+        proc_batch_size = int(total_batch_size/self.size)
+        embeddings = self.comm.bcast(embeddings, root=0)
+        loc_np = input['loc'].numpy().astype('float32')
+        loc_np_band = np.empty([proc_batch_size,graph_size,2], dtype='float32')
+        self.comm.Scatterv(loc_np, loc_np_band, root=0)
+        loc = torch.tensor(loc_np_band, dtype=torch.float32)
+        # print('Rank: ', self.rank, ' loc size: ', loc.size())
+        depot_np = input['depot'].numpy().astype('float32')
+        depot_np_band = np.empty([proc_batch_size, 2], dtype='float32')
+        self.comm.Scatterv(depot_np, depot_np_band, root=0)
+        depot = torch.tensor(depot_np_band, dtype=torch.float32)
+        deadline_np = input['deadline'].numpy().astype('float32')
+        deadline_np_band = np.empty([proc_batch_size,graph_size,1], dtype='float32')
+        self.comm.Scatterv(deadline_np, deadline_np_band, root=0)
+        deadline = torch.tensor(deadline_np_band, dtype=torch.float32)
+        embeddings_np = embeddings.detach().numpy().astype('float32')
+        embeddings_np_band = np.empty([proc_batch_size, int(graph_size+1), self.embedding_dim], dtype='float32')
+        self.comm.Scatterv(embeddings_np, embeddings_np_band, root=0)
+        embeddings_band = torch.tensor(embeddings_np_band, dtype=torch.float32, requires_grad=True)
+        input_band = {'loc': loc, 'depot': depot, 'deadline': deadline}
+        # print('Rank: ', self.rank, ' Input: ', input_band)
+        _log_p, pi, cost = self._inner(input_band, embeddings_band)
+        cos, mask = self.problem.get_costs(input_band, pi)
         # Log likelyhood is calculated within the model since returning it per action does not work well with
         # DataParallel since sequences can be of different lengths
         ll = self._calc_log_likelihood(_log_p, pi, mask)
-        if return_pi:
+        # ops = torch.stack(outputs, 1).numpy().astype('float64')
+        # seq = torch.stack(sequences, 1).numpy().astype('float64')
+        # cost_np = cost.numpy().astype('float64')
+        cost_gather_np = cost.numpy().astype('float32')
+        ll_gather_np = ll.detach().numpy().astype('float32')
+        # print('Rank: ',self.rank,' Done with cost calculation for batch............')
+        if self.rank == 0:
+            cost_gather = np.empty([int(proc_batch_size*self.size), 1], dtype='float32')
+            ll_gather = np.empty([proc_batch_size*self.size], dtype='float32')
+        else:
+            cost_gather = None
+            ll_gather = None
+
+        self.comm.Barrier()
+        self.comm.Gatherv(cost_gather_np, cost_gather, root=0)
+        self.comm.Gatherv(ll_gather_np, ll_gather, root=0)
+
+        self.comm.Barrier()
+        if self.rank ==0:
+            cost = torch.tensor(cost_gather, dtype=torch.float32)
+            ll = torch.tensor(ll_gather, dtype=torch.float32, requires_grad=True)
+        else:
+            cost = None
+            ll = None
+        cost = self.comm.bcast(cost, root=0)
+        ll = self.comm.bcast(ll, root=0)
+        if return_pi: ## nothing happens here as well
             return cost, ll, pi
 
         return cost, ll
@@ -230,19 +282,9 @@ class AttentionModel(nn.Module):
 
         outputs = []
         sequences = []
-
-        # loc = self.comm.scatter(input['loc'].numpy().astype('float64'), root=0)
-        # deopt = self.comm.scatter(input['depot'].numpy().astype('float64'), root=0)
-        # deadline = self.comm.scatter(input['deadline'].numpy().astype('float64'), root=0)
-        embeddings_band =  embeddings #self.comm.scatter(embeddings.numpy().astype('float64'), root=0)
-
-        input_band = input#{'loc': loc, 'depot': deopt, 'deadline': deadline}
-
-
-
-        state = self.problem.make_state(input_band)
+        state = self.problem.make_state(input)
         # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
-        fixed = self._precompute(embeddings_band)
+        fixed = self._precompute(embeddings)
 
         batch_size = state.ids.size(0)
         start_time = time.time()
@@ -278,13 +320,10 @@ class AttentionModel(nn.Module):
             # print(state.all_finished().item() == 0)
 
             i += 1
-        ops = torch.stack(outputs, 1).numpy().astype('float64')
-        seq = torch.stack(sequences, 1).numpy().astype('float64')
-        cost_np = cost.numpy().astype('float64')
+
 
         #### gather operation must be done
         # Collected lists, return Tensor
-        print('Time for finishing one batch: ',time.time() - start_time)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):

@@ -1,8 +1,12 @@
 import os
+import sys
+import numpy as np
 import time
 # from tqdm import tqdm
 import torch
 import math
+import mpi_opts
+
 
 from torch.utils.data import DataLoader
 from torch.nn import DataParallel
@@ -29,8 +33,11 @@ def validate(model, dataset, opts):
 
 def rollout(model, dataset, opts):
     # Put in greedy evaluation mode!
+    # print('Rank:', model.rank, ' Loc size:', len(dataset.data))
     set_decode_type(model, "greedy")
     model.eval()
+
+    # print('Rollout rank: ', model.rank)
 
     def eval_model_bat(bat):
         with torch.no_grad():
@@ -64,7 +71,7 @@ def clip_grad_norms(param_groups, max_norm=math.inf):
     return grad_norms, grad_norms_clipped
 
 
-def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, problem, tb_logger, opts):
+def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, problem, tb_logger, opts, rank, comm):
     print("Start train epoch {}, lr={} for run {}".format(epoch, optimizer.param_groups[0]['lr'], opts.run_name))
     step = epoch * (opts.epoch_size // opts.batch_size)
     start_time = time.time()
@@ -73,16 +80,20 @@ def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, pr
     #     tb_logger.log_value('learnrate_pg0', optimizer.param_groups[0]['lr'], step)
 
     # Generate new training data for each epoch
+
     training_dataset = baseline.wrap_dataset(problem.make_dataset(
         size=opts.graph_size, num_samples=opts.epoch_size, distribution=opts.data_distribution))
-    training_dataloader = DataLoader(training_dataset, batch_size=opts.batch_size, num_workers=0)
 
-    # Put model in train mode!
+
+    training_dataset = comm.bcast(training_dataset, root = 0)
+    training_dataloader = DataLoader(training_dataset, batch_size=opts.batch_size, num_workers=0)
+    print('Rollout rank: ', rank, 'We got training dataset')
+    #
+    # # Put model in train mode!
     model.train()
     set_decode_type(model, "sampling")
-
     for batch_id, batch in enumerate(training_dataloader):
-
+        start_time_batch = time.time()
         train_batch(
             model,
             optimizer,
@@ -92,37 +103,49 @@ def train_epoch(model, optimizer, baseline, lr_scheduler, epoch, val_dataset, pr
             step,
             batch,
             tb_logger,
-            opts
+            opts,
+            rank,
+            comm
         )
-        # print(model.init_embed_depot.weight)
-        # print('step: ',step)
+        # print('Rank: ', rank, ' Batch: ', batch_id, ' done.')
+        # if rank == 0:
+        #     print('Time for batch: ', time.time() - start_time_batch)
+        #     print('Step: ', step)
         step += 1
+    comm.Barrier()
 
-    epoch_duration = time.time() - start_time
-    print("Finished epoch {}, took {} s".format(epoch, time.strftime('%H:%M:%S', time.gmtime(epoch_duration))))
+    if rank == 0:
+        epoch_duration = time.time() - start_time
+        print("Finished epoch {}, took {} s".format(epoch, time.strftime('%H:%M:%S', time.gmtime(epoch_duration))))
 
-    if (opts.checkpoint_epochs != 0 and epoch % opts.checkpoint_epochs == 0) or epoch == opts.n_epochs - 1:
-        print('Saving model and state...')
-        torch.save(
-            {
-                'model': get_inner_model(model).state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'rng_state': torch.get_rng_state(),
-                'cuda_rng_state': torch.cuda.get_rng_state_all(),
-                'baseline': baseline.state_dict()
-            },
-            os.path.join(opts.save_dir, 'epoch-{}.pt'.format(epoch))
-        )
+        if (opts.checkpoint_epochs != 0 and epoch % opts.checkpoint_epochs == 0) or epoch == opts.n_epochs - 1:
+            model.comm = None
+            baseline.model.comm = None
+            print('Saving model and state...')
+            torch.save(
+                {
+                    'model': get_inner_model(model).state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'rng_state': torch.get_rng_state(),
+                    'cuda_rng_state': torch.cuda.get_rng_state_all(),
+                    'baseline': baseline.state_dict()
+                },
+                os.path.join(opts.save_dir, 'epoch-{}.pt'.format(epoch))
+            )
+    model.comm = comm
+    baseline.model.comm = comm
 
-    # avg_reward = validate(model, val_dataset, opts) # doesn't have much use --- so dont worry about this
-    #
-    # if not opts.no_tensorboard:
-    #     tb_logger.log_value('val_avg_reward', avg_reward, step)
+        # avg_reward = validate(model, val_dataset, opts) # doesn't have much use --- so dont worry about this
+        #
+        # if not opts.no_tensorboard:
+        #     tb_logger.log_value('val_avg_reward', avg_reward, step)
 
     baseline.epoch_callback(model, epoch)
+    if rank == 0:
 
-    # lr_scheduler should be called at end of epoch
-    lr_scheduler.step()
+
+        # lr_scheduler should be called at end of epoch
+        lr_scheduler.step()
 
 
 def train_batch(
@@ -134,35 +157,49 @@ def train_batch(
         step,
         batch,
         tb_logger,
-        opts
+        opts,
+        rank,
+        comm
 ):
-    x, bl_val = baseline.unwrap_batch(batch)
+    batch = comm.bcast(batch, root=0)
+    model.comm = None
+    baseline.model.comm = None
+    model = comm.bcast(model, root=0)
+    baseline = comm.bcast(baseline, root=0)
+    model.comm = comm
+    model.rank = rank
+    baseline.model.comm = comm
+    baseline.model.rank = rank
+    x, bl_val = baseline.unwrap_batch(batch) ## no parallelization required here
     x = move_to(x, opts.device)
     bl_val = move_to(bl_val, opts.device) if bl_val is not None else None
     # Evaluate model, get costs and log probabilities
     cost, log_likelihood = model(x)
 
-
+    # print('Rank: ', rank, bl_val)
     # Evaluate baseline, get baseline loss if any (only for critic)
-    bl_val, bl_loss = baseline.eval(x, cost) if bl_val is None else (bl_val, 0)
-
+    bl_val, bl_loss = baseline.eval(x, cost) if bl_val is None else (bl_val, 0) ## nothing happens here
+    # print('Rank: ', rank, ' Loss calculation.')
+    if rank == 0:
+        # cost = torch.tensor(cost_gather, dtype=torch.float32)
+        # log_likelihood = torch.tensor(ll_gather, dtype=torch.float32, requires_grad=True)
     # Calculate loss
-    reinforce_loss = ((cost - bl_val) * log_likelihood).mean()
+        reinforce_loss = ((cost - bl_val) * log_likelihood).mean()
 
-    loss = reinforce_loss + bl_loss
+        loss = reinforce_loss + bl_loss
 
-    # Perform backward pass and optimization step
-    optimizer.zero_grad()
+        # Perform backward pass and optimization step
+        optimizer.zero_grad()
 
-    loss.backward()
+        loss.backward()
 
-    # Clip gradient norms and get (clipped) gradient norms for logging
-    grad_norms = clip_grad_norms(optimizer.param_groups, opts.max_grad_norm)
+        # Clip gradient norms and get (clipped) gradient norms for logging
+        grad_norms = clip_grad_norms(optimizer.param_groups, opts.max_grad_norm)
 
-    optimizer.step()
+        optimizer.step()
 
 
-    # Logging
-    if step % int(opts.log_step) == 0:
-        log_values(cost, grad_norms, epoch, batch_id, step,
-                   log_likelihood, reinforce_loss, bl_loss, tb_logger, opts)
+        # Logging
+        if step % int(opts.log_step) == 0:
+            log_values(cost, grad_norms, epoch, batch_id, step,
+                       log_likelihood, reinforce_loss, bl_loss, tb_logger, opts)

@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from scipy.stats import ttest_rel
 import copy
 from train import rollout, get_inner_model
+from mpi4py import MPI
 
 class Baseline(object):
 
@@ -151,7 +152,12 @@ class RolloutBaseline(Baseline):
         self._update_model(model, epoch)
 
     def _update_model(self, model, epoch, dataset=None):
+        # model.comm = MPI.COMM_WORLD
+        # model = MPI.COMM_WORLD.bcast(model, root=0)
         self.model = copy.deepcopy(model)
+        model.comm = MPI.COMM_WORLD
+        self.model.comm = MPI.COMM_WORLD
+        # self.model.comm = MPI.COMM_WORLD
         # Always generate baseline dataset when updating model to prevent overfitting to the baseline dataset
 
         if dataset is not None:
@@ -173,7 +179,8 @@ class RolloutBaseline(Baseline):
         self.epoch = epoch
 
     def wrap_dataset(self, dataset):
-        print("Evaluating baseline on dataset...")
+        # print('Rank:', self.model.rank, ' Loc size:', len(dataset.data))
+        # print('Rank:', self.model.rank,"Evaluating baseline on dataset...")
         # Need to convert baseline to 2D to prevent converting to double, see
         # https://discuss.pytorch.org/t/dataloader-gives-double-instead-of-float/717/3
         return BaselineDataset(dataset, rollout(self.model, dataset, self.opts).view(-1, 1))
@@ -211,7 +218,10 @@ class RolloutBaseline(Baseline):
             print("p-value: {}".format(p_val))
             if p_val < self.opts.bl_alpha:
                 print('Update baseline')
+                model.comm = None
+                self.model.com = None
                 self._update_model(model, epoch)
+                model.comm = MPI.COMM_WORLD
 
     def state_dict(self):
         return {
