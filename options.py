@@ -11,9 +11,9 @@ def get_options(args=None):
     # Data
     parser.add_argument('--problem', default='mrta', help="The problem to solve, default 'tsp'")
     parser.add_argument('--graph_size', type=int, default=100, help="The size of the problem graph")
-    parser.add_argument('--batch_size', type=int, default=20, help='Number of instances per batch during training') # changed
-    parser.add_argument('--epoch_size', type=int, default=200, help='Number of instances per epoch during training') # changed
-    parser.add_argument('--val_size', type=int, default=20, # changed
+    parser.add_argument('--batch_size', type=int, default=100, help='Number of instances per batch during training') # changed
+    parser.add_argument('--epoch_size', type=int, default=2000, help='Number of instances per epoch during training') # changed
+    parser.add_argument('--val_size', type=int, default=200, # changed
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--val_dataset', type=str, default=None, help='Dataset file to use for validation')
 
@@ -33,7 +33,7 @@ def get_options(args=None):
     parser.add_argument('--lr_critic', type=float, default=1e-4, help="Set the learning rate for the critic network")
     parser.add_argument('--lr_decay', type=float, default=1.0, help='Learning rate decay per epoch')
     parser.add_argument('--eval_only', action='store_true', help='Set this value to only evaluate model')
-    parser.add_argument('--n_epochs', type=int, default=2, help='The number of epochs to train')
+    parser.add_argument('--n_epochs', type=int, default=5, help='The number of epochs to train')
     parser.add_argument('--seed', type=int, default=1234, help='Random seed to use')
     parser.add_argument('--max_grad_norm', type=float, default=1.0,
                         help='Maximum L2 norm for gradient clipping, default 1.0 (0 to disable clipping)')

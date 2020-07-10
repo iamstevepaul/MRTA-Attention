@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/MRTA-Attention.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MRTA-Attention.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nets/attention_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/attention_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/options.py" beforeDir="false" afterPath="$PROJECT_DIR$/options.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reinforce_baselines.py" beforeDir="false" afterPath="$PROJECT_DIR$/reinforce_baselines.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
