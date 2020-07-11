@@ -1,0 +1,11 @@
+ Anaconda Python 3.6 version 5.2.0 has been loaded. 
+ Intel-MPI is in your path. This is adequate for compiling and running most
+codes. Source the
+/util/academic/intel/17.0/compilers_and_libraries_2017/linux/mpi/intel64/bin/mpivars.sh
+file for more features. 
+  Could not find a version that satisfies the requirement pkg-resources==0.0.0 (from -r requirements.txt (line 5)) (from versions: )
+No matching distribution found for pkg-resources==0.0.0 (from -r requirements.txt (line 5))
+You are using pip version 10.0.1, however version 20.2b1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+/user/stevepau/.local/lib/python3.6/site-packages/torch/storage.py:34: FutureWarning: pickle support for Storage will be removed in 1.5. Use `torch.save` instead
+  warnings.warn("pickle support for Storage will be removed in 1.5. Use `torch.save` instead", FutureWarning)

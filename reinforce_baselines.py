@@ -211,17 +211,17 @@ class RolloutBaseline(Baseline):
             epoch, candidate_mean, self.epoch, self.mean, candidate_mean - self.mean))
         if candidate_mean - self.mean < 0:
             # Calc p value
-            t, p = ttest_rel(candidate_vals, self.bl_vals)
+             t, p = ttest_rel(candidate_vals, self.bl_vals)
 
-            p_val = p / 2  # one-sided
-            assert t < 0, "T-statistic should be negative"
-            print("p-value: {}".format(p_val))
-            if p_val < self.opts.bl_alpha:
-                print('Update baseline')
-                model.comm = None
-                self.model.com = None
-                self._update_model(model, epoch)
-                model.comm = MPI.COMM_WORLD
+             p_val = p / 2  # one-sided
+             assert t < 0, "T-statistic should be negative"
+             print("p-value: {}".format(p_val))
+             if p_val < self.opts.bl_alpha:
+                 print('Update baseline')
+                 model.comm = None
+                 self.model.com = None
+                 self._update_model(model, epoch)
+                 model.comm = MPI.COMM_WORLD
 
     def state_dict(self):
         return {

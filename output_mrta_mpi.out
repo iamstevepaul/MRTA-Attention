@@ -1,0 +1,460 @@
+SLURM_JOBID=3525688
+SLURM_JOB_NODELIST=cpn-q07-27-01
+SLURM_NNODES=1
+SLURMTMPDIR=/scratch/3525688
+SLURM_SUBMIT_DIR=/user/stevepau/MRTA-ATT-MPI/MRTA-Attention
+Requirement already satisfied: future==0.18.2 in /user/stevepau/.local/lib/python3.6/site-packages (from -r requirements.txt (line 1)) (0.18.2)
+Requirement already satisfied: mpi4py==3.0.3 in /user/stevepau/.local/lib/python3.6/site-packages (from -r requirements.txt (line 2)) (3.0.3)
+Collecting numpy==1.19.0 (from -r requirements.txt (line 3))
+  Using cached https://files.pythonhosted.org/packages/00/16/476826a84d545424084499763248abbbdc73d065168efed9aa71cdf2a7dc/numpy-1.19.0-cp36-cp36m-manylinux1_x86_64.whl
+Collecting Pillow==7.2.0 (from -r requirements.txt (line 4))
+  Using cached https://files.pythonhosted.org/packages/30/bf/92385b4262178ca22b34f82e0e09c2922eb351fe39f3cc7b8ba9ea555b41/Pillow-7.2.0-cp36-cp36m-manylinux1_x86_64.whl
+Collecting pkg-resources==0.0.0 (from -r requirements.txt (line 5))
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  21 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926196058591207  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  21 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.934715354442597  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  22 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926184157530466  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  22 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.934683227539063  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  27 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.92625073591868  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  27 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.934735071659087  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  32 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926189215977987  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  32 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.934777454535167  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  33 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926301856835684  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  33 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935021603107453  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  23 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926237579186758  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  23 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.93495655854543  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  29 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926039282480875  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  29 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935031886895498  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  37 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926051437854767  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  37 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935082276662191  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  28 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.92625192006429  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  28 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935078231493632  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  16 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926266439755757  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  16 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935070085525513  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  17 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.92638577222824  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  17 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935071369012197  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  35 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926248184839885  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  35 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935075922807057  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  30 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926288406054178  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  30 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935069541136423  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  7 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.92625434398651  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  7 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935057338078817  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  39 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.9261625289917  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  39 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935033853848775  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  36 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926277573903402  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  36 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935013520717622  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  26 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.925975596904754  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  26 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935079816977183  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  1 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926173679033916  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  1 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.93500593105952  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  8 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926207315921783  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  8 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935062126318615  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  15 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.925931318600972  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  15 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935077238082886  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  25 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926112977663676  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  25 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935072751839956  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  3 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926381369431814  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  3 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935078577200573  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  14 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926319813728332  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  14 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935039536158245  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  6 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926270484924316  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  6 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935107199350993  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  2 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.92634607553482  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  2 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.9350745956103  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  34 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926008435090383  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  34 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935112365086873  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  13 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926294032732645  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  13 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935080428918203  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  20 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.924774479866027  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  20 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935076185067494  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  19 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926258305708567  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  19 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.93510108391444  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  31 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926127115885416  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  31 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.93514312505722  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  24 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926239613691966  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  24 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935086544354757  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  18 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926196491718292  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  18 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.93513069152832  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  10 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926302142937978  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  10 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935134597619374  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  9 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926313471794128  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  9 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935121250152587  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  11 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926398511727651  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  11 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935126761595408  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  12 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926320072015127  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  12 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935149196783701  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  5 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926214003562928  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  5 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935133544603984  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  38 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926204927762349  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  38 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935110318660737  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  0 We got training dataset
+epoch: 0, train_batch_id: 0, avg_cost: 1.6290667057037354
+grad_norm: 0.0, clipped: 0.0
+Finished epoch 0, took 00:09:26 s
+Saving model and state...
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926356442769368  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  0 We got training dataset
+Finished epoch 1, took 00:09:26 s
+Saving model and state...
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935099303722382  minutes.
+Evaluating baseline model on evaluation dataset
+Start train epoch 0, lr=0.0001 for run run_20200710T155353
+Rollout rank:  4 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 0 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  0  time:  10.926447562376659  minutes.
+Start train epoch 1, lr=0.0001 for run run_20200710T155353
+Rollout rank:  4 We got training dataset
+Evaluating candidate model on evaluation dataset
+Epoch 1 candidate mean 7.028237342834473, baseline epoch 0 mean 7.028237342834473, difference 0.0
+Epoch:  1  time:  10.935106933116913  minutes.
+***********************************************************************
+All Done!
