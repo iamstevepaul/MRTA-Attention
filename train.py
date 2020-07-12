@@ -160,7 +160,7 @@ def train_batch(
     grad_norms = clip_grad_norms(optimizer.param_groups, opts.max_grad_norm)
 
     optimizer.step()
-
+    # print(optimizer.param_groups[0]['params'][0][0][0].item())
 
     # Logging
     if step % int(opts.log_step) == 0:

@@ -241,17 +241,17 @@ class AttentionModel(nn.Module):
         # print(state.visited_.all().item())
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
 
-            # if self.shrink_size is not None:
-            #     unfinished = torch.nonzero(state.get_finished() == 0)
-            #     if len(unfinished) == 0:
-            #         break
-            #     unfinished = unfinished[:, 0]
-            #     # Check if we can shrink by at least shrink_size and if this leaves at least 16
-            #     # (otherwise batch norm will not work well and it is inefficient anyway)
-            #     if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
-            #         # Filter states
-            #         state = state[unfinished]
-            #         fixed = fixed[unfinished]
+            if self.shrink_size is not None:
+                unfinished = torch.nonzero(state.get_finished() == 0)
+                if len(unfinished) == 0:
+                    break
+                unfinished = unfinished[:, 0]
+                # Check if we can shrink by at least shrink_size and if this leaves at least 16
+                # (otherwise batch norm will not work well and it is inefficient anyway)
+                if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
+                    # Filter states
+                    state = state[unfinished]
+                    fixed = fixed[unfinished]
 
             log_p, mask = self._get_log_p(fixed, state)
 

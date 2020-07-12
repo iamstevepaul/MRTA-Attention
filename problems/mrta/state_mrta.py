@@ -187,29 +187,50 @@ class StateMRTA(NamedTuple):
         self.robots_distance_travelled[self.ids, self.robot_taking_decision] += self.distance_matrix[
             self.ids, self.robots_current_destination[self.ids, robot_taking_decision], selected]
 
-        for id in self.ids:
+        zero_indices = torch.nonzero(selected[:,0] ==0)
+        if zero_indices.size()[0] > 0:
+            self.robots_capacity[zero_indices[:,0], self.robot_taking_decision[zero_indices[:,0]].view(-1)]= self.max_capacity
+            robots_range_remaining[zero_indices[:, 0], robot_taking_decision[zero_indices[:, 0]].view(-1)] = self.max_range
+            # robots_range_remaining[zero_indices[:, 0], robot_taking_decision[zero_indices[:, 0]].view(-1)]
 
-            if selected[id].item() == 0:
-                # print('Agent ', self.robot_taking_decision.item(), ' going to depot.')
-                # print('Capacity and range will br renewed')
-                self.robots_capacity[id, self.robot_taking_decision[id].item()] = self.max_capacity
-                robots_range_remaining[id, robot_taking_decision[id].item()] = self.max_range
-            else:
-                robots_range_remaining[id, robot_taking_decision[id].item()] -= self.distance_matrix[
-                    id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[
-                        id].item()].item()
-                # print('Robot new range: ', robots_range_remaining[id, robot_taking_decision[id].item()])
-                if self.deadline[id, selected[id].item() -1].item() > self.robots_next_decision_time[id, self.robot_taking_decision[id].item()]:
-                    # print('Previous capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
-                    self.robots_capacity[id, self.robot_taking_decision[id].item()] -= 1
-                    # print('New capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
-                    # print('All capacities: ', self.robots_capacity)
-                    self.tasks_done_success[id] += 1
-
-                else:
-                    self.tasks_missed_deadline[id] += 1
-
-                self.tasks_visited[id] += 1
+        non_zero_indices = torch.nonzero(selected)
+        if non_zero_indices.size()[0] > 0:
+            deadlines = self.deadline[self.ids.view(-1), selected.view(-1) - 1]
+            dest_time = self.robots_next_decision_time[self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)]
+            feas_ids = (deadlines > dest_time).nonzero()
+            combined = torch.cat((non_zero_indices[:,0], feas_ids[:,0]))
+            uniques, counts = combined.unique(return_counts=True)
+            # difference = uniques[counts == 1]
+            intersection = uniques[counts > 1]
+            distance_new = self.distance_matrix[non_zero_indices[:, 0], self.robots_current_destination[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)].view(-1), selected[non_zero_indices[:, 0]].view(-1)]
+            robots_range_remaining[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)] -= distance_new
+            if intersection.size()[0] > 0:
+                self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1
+                self.tasks_done_success[intersection] +=1
+            self.tasks_visited[non_zero_indices[:,0]] += 1
+        # for id in self.ids:
+        #
+        #     if selected[id].item() == 0: ### this part is done
+        #         # print('Agent ', self.robot_taking_decision.item(), ' going to depot.')
+        #         # print('Capacity and range will br renewed')
+        #         self.robots_capacity[id, self.robot_taking_decision[id].item()] = self.max_capacity
+        #         robots_range_remaining[id, robot_taking_decision[id].item()] = self.max_range
+        #     else:
+        #         robots_range_remaining[id, robot_taking_decision[id].item()] -= self.distance_matrix[
+        #             id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[
+        #                 id].item()].item()  ## this can be added --- this part  done
+        #         # print('Robot new range: ', robots_range_remaining[id, robot_taking_decision[id].item()])
+        #         if self.deadline[id, selected[id].item() -1].item() > self.robots_next_decision_time[id, self.robot_taking_decision[id].item()]:
+        #             # print('Previous capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
+        #             self.robots_capacity[id, self.robot_taking_decision[id].item()] -= 1
+        #             # print('New capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
+        #             # print('All capacities: ', self.robots_capacity)
+        #             self.tasks_done_success[id] += 1
+        #
+        #         else:
+        #             self.tasks_missed_deadline[id] += 1
+        #
+        #         self.tasks_visited[id] += 1
 
         # print('New range: ', robots_range_remaining)
         # print('Missed tasks: ', self.tasks_missed_deadline.item())
@@ -286,19 +307,43 @@ class StateMRTA(NamedTuple):
         full_mask = torch.cat((mask_depot[:, :, None], mask_loc), -1)
         robot_taking_decision = self.robot_taking_decision
         capacity = self.robots_capacity[self.ids, robot_taking_decision]
-        for id in self.ids:
+        zero_capacity_ind = (capacity[:,0] < 1).nonzero()
 
-            if capacity[id].item() < 1:
-                full_mask[id, :, 1:] = True
-            else:
-                avail_range = self.robots_range_remaining[id, robot_taking_decision[id].item()].item()
-                robot_dest = self.robots_current_destination[id, robot_taking_decision[id].item()].item()
-                if robot_dest != 0:
-                    for i in range(self.n_nodes):
-                        d1 = self.distance_matrix[id, robot_dest, i+1].item()
-                        d2 = self.distance_matrix[id, i+1, 0].item()
-                        if not full_mask[id,:,i+1].item() and avail_range < d1+d2:
-                            full_mask[id, :, i + 1] = True
+        if zero_capacity_ind.size()[0] > 0:
+            full_mask[zero_capacity_ind[:,0],:,1:] = True
+
+        non_zero_capacity_ind = (capacity[:, 0] > 0).nonzero()
+        if non_zero_capacity_ind.size()[0] > 0:
+            robot_dest = self.robots_current_destination[self.ids[:,0], robot_taking_decision[self.ids[:,0]].view(-1)]
+            non_zero_robot_dest = (robot_dest != 0).nonzero()
+            combined = torch.cat((non_zero_capacity_ind[:, 0], non_zero_robot_dest[:, 0]))
+            uniques, counts = combined.unique(return_counts=True)
+            # difference = uniques[counts == 1]
+            intersection = uniques[counts > 1]
+            if intersection.size()[0] > 0:
+                avail_range = self.robots_range_remaining[
+                    intersection, robot_taking_decision[intersection].view(-1)]
+                # nodes = torch.arange(1, self.n_nodes+1)
+                d1 = self.distance_matrix[intersection, robot_dest[intersection].view(-1)]
+                d2 = self.distance_matrix[intersection, 0]
+                avail_range_expand = avail_range.T.expand(self.n_nodes+1,avail_range.size()[0]).T
+                set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1+d2)
+                full_mask[intersection] = set_true[:, None]
+
+        # full_mask[:,:,0] = False
+        # for id in self.ids:
+        #
+        #     if capacity[id].item() < 1: ## done
+        #         full_mask[id, :, 1:] = True
+        #     else:
+        #         avail_range = self.robots_range_remaining[id, robot_taking_decision[id].item()].item() ## done
+        #         robot_dest = self.robots_current_destination[id, robot_taking_decision[id].item()].item()
+        #         if robot_dest != 0:
+        #             for i in range(self.n_nodes):
+        #                 d1 = self.distance_matrix[id, robot_dest, i+1].item()
+        #                 d2 = self.distance_matrix[id, i+1, 0].item()
+        #                 if not full_mask[id,:,i+1].item() and avail_range < d1+d2:
+        #                     full_mask[id, :, i + 1] = True
 
         return full_mask
 
