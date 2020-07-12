@@ -2,11 +2,121 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nets/attention_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/attention_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/options.py" beforeDir="false" afterPath="$PROJECT_DIR$/options.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200703T160040/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T083517/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T083956/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T091818/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T091909/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T092234/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200706T170820/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T100935/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T101101/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T101130/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T132436/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T134224/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T135546/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200707T135624/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T091444/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T091532/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T160712/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T160831/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T160831/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200708T160831/epoch-1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T095453/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T100611/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T101032/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T101118/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102657/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-2.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-3.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-4.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-5.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-6.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-7.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-8.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T102757/epoch-9.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200709T125131/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174715/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-2.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-3.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-4.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-5.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-6.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-7.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-8.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T174802/epoch-9.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200710T182541/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200711T101457/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T105001/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T125442/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T131249/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T131800/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T132204/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134329/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134518/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134529/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134628/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134742/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T134815/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T140452/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T140704/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T141103/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T141207/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T141237/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T141438/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T142230/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T143856/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T144935/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T145052/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T145455/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T150033/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T150033/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T150033/epoch-1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T150033/epoch-2.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T151351/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T151739/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T151739/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T154254/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T155900/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T160426/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T160702/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T160740/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T163252/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T165518/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T165739/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T170036/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T170354/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T171920/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T172427/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T172444/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T173341/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T175524/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T180317/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T180516/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T180702/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T180734/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T180811/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T183350/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192013/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-0.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-2.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-3.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-4.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-5.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-6.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-7.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-8.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192033/epoch-9.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192157/args.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/mrta_100/run_20200712T192433/args.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
