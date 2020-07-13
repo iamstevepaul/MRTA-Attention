@@ -318,7 +318,6 @@ class StateMRTA(NamedTuple):
             non_zero_robot_dest = (robot_dest != 0).nonzero()
             combined = torch.cat((non_zero_capacity_ind[:, 0], non_zero_robot_dest[:, 0]))
             uniques, counts = combined.unique(return_counts=True)
-            # difference = uniques[counts == 1]
             intersection = uniques[counts > 1]
             if intersection.size()[0] > 0:
                 avail_range = self.robots_range_remaining[
@@ -328,7 +327,7 @@ class StateMRTA(NamedTuple):
                 d2 = self.distance_matrix[intersection, 0]
                 avail_range_expand = avail_range.T.expand(self.n_nodes+1,avail_range.size()[0]).T
                 set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1+d2)
-                full_mask[intersection] = set_true[:, None]
+                full_mask[intersection,:,1:] = set_true[:, None,1:]
 
         # full_mask[:,:,0] = False
         # for id in self.ids:
