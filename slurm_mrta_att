@@ -3,10 +3,10 @@
 #SBATCH --partition=scavenger
 #SBATCH --qos=scavenger
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:tesla_p100-pcie-16gb
+#SBATCH --gres=gpu:2
 #SBATCH --job-name="mrta_att_stevepau"
-#SBATCH --output=output_mrta.out
-#SBATCH --error=error_mrta.err
+#SBATCH --output=output_mrta_scav_2.out
+#SBATCH --error=error_mrta_scav_2.err
 #SBATCH --mail-user=stevepau@buffalo.edu
 #SBATCH --mail-type=END
 #SBATCH --exclusive
@@ -34,7 +34,7 @@ conda activate pytorch-1.5-dgl
 #conda install -p /home/stevepau tqdm
 #conda activate tqdm
 #
-CUDA_VISIBLE_DEVICES=0
+CUDA_VISIBLE_DEVICES=0,1
 python run.py
 
 echo "***********************************************************************"
