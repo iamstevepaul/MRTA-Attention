@@ -84,13 +84,13 @@ class MRTA(object):
 
 
 def make_instance(args):
-    depot, loc, demand, capacity, *args = args
+    depot, loc, deadline, *args = args
     grid_size = 1
     if len(args) > 0:
         depot_types, customer_types, grid_size = args
     return {
         'loc': torch.tensor(loc, dtype=torch.float) / grid_size,
-        'demand': torch.tensor(demand, dtype=torch.float) / capacity,
+        'deadline': torch.tensor(deadline, dtype=torch.float),
         'depot': torch.tensor(depot, dtype=torch.float) / grid_size
     }
 

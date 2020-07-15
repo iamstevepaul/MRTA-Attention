@@ -276,7 +276,7 @@ class AttentionModel(nn.Module):
             # print(state.all_finished().item() == 0)
 
             i += 1
-
+        print(state.tasks_done_success)
         # Collected lists, return Tensor
 
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost

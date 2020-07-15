@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", help="Filename of the dataset to create (ignores datadir)")
     parser.add_argument("--data_dir", default='data', help="Create datasets in data_dir/problem (default 'data')")
-    parser.add_argument("--name", type=str, required=True, help="Name to identify dataset")
+    parser.add_argument("--name", type=str, default='mrta', help="Name to identify dataset")
     parser.add_argument("--problem", type=str, default='all',
                         help="Problem, 'tsp', 'vrp', 'pctsp' or 'op_const', 'op_unif' or 'op_dist'"
                              " or 'all' to generate all")
