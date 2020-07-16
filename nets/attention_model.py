@@ -260,7 +260,8 @@ class AttentionModel(nn.Module):
             # print(selected[0].item(), state.robot_taking_decision[0])
 
             state = state.update(selected)
-            cost = torch.div(state.lengths, state.tasks_done_success)
+            # cost = torch.div(state.lengths, state.tasks_done_success)
+            cost = torch.mul(torch.div(state.tasks_done_success, state.n_nodes), 0.8) + torch.mul(torch.div(state.lengths, state.n_nodes*1.414),0.2)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -276,7 +277,7 @@ class AttentionModel(nn.Module):
             # print(state.all_finished().item() == 0)
 
             i += 1
-        print(state.tasks_done_success)
+        # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
 
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
