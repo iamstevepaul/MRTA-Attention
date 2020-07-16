@@ -208,34 +208,7 @@ class StateMRTA(NamedTuple):
                 self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1
                 self.tasks_done_success[intersection] +=1
             self.tasks_visited[non_zero_indices[:,0]] += 1
-        # for id in self.ids:
-        #
-        #     if selected[id].item() == 0: ### this part is done
-        #         # print('Agent ', self.robot_taking_decision.item(), ' going to depot.')
-        #         # print('Capacity and range will br renewed')
-        #         self.robots_capacity[id, self.robot_taking_decision[id].item()] = self.max_capacity
-        #         robots_range_remaining[id, robot_taking_decision[id].item()] = self.max_range
-        #     else:
-        #         robots_range_remaining[id, robot_taking_decision[id].item()] -= self.distance_matrix[
-        #             id, self.robots_current_destination[id, robot_taking_decision[id].item()].item(), selected[
-        #                 id].item()].item()  ## this can be added --- this part  done
-        #         # print('Robot new range: ', robots_range_remaining[id, robot_taking_decision[id].item()])
-        #         if self.deadline[id, selected[id].item() -1].item() > self.robots_next_decision_time[id, self.robot_taking_decision[id].item()]:
-        #             # print('Previous capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
-        #             self.robots_capacity[id, self.robot_taking_decision[id].item()] -= 1
-        #             # print('New capacity: ', self.robots_capacity[id, self.robot_taking_decision[id].item()].item())
-        #             # print('All capacities: ', self.robots_capacity)
-        #             self.tasks_done_success[id] += 1
-        #
-        #         else:
-        #             self.tasks_missed_deadline[id] += 1
-        #
-        #         self.tasks_visited[id] += 1
 
-        # print('New range: ', robots_range_remaining)
-        # print('Missed tasks: ', self.tasks_missed_deadline.item())
-        # print('Succesful tasks: ', self.tasks_done_success.item())
-        # print('Tasks visited: ', self.tasks_visited.item())
         self.robots_start_point[self.ids, self.robot_taking_decision] = self.robots_current_destination[
             self.ids, self.robot_taking_decision]
         self.robots_current_destination[self.ids, self.robot_taking_decision] = selected
@@ -254,10 +227,7 @@ class StateMRTA(NamedTuple):
             visited_ = mask_long_scatter(self.visited_, prev_a - 1)
 
         new_cur_coord = self.coords[self.ids, selected]
-        # cur_coord = self.coords.gather(
-        #     1,
-        #     selected[:, None].expand(selected.size(0), 1, self.coords.size(-1))
-        # )[:, 0, :]
+
         lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
         visited_[:,:,0] = 0
 
@@ -284,7 +254,7 @@ class StateMRTA(NamedTuple):
         return self.visited.sum(-1) == self.visited.size(-1)
 
     def get_current_node(self):
-        return self.prev_a
+        return self.robots_current_destination[self.ids, self.robot_taking_decision] #self.prev ## this has been changed
 
     def get_mask(self):
         """

@@ -261,7 +261,7 @@ class AttentionModel(nn.Module):
 
             state = state.update(selected)
             # cost = torch.div(state.lengths, state.tasks_done_success)
-            cost = torch.mul(torch.div(state.tasks_done_success, state.n_nodes), 0.8) + torch.mul(torch.div(state.lengths, state.n_nodes*1.414),0.2)
+            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
