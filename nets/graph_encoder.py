@@ -206,3 +206,41 @@ class GraphAttentionEncoder(nn.Module):
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
         )
+
+class CCN(nn.Module):
+    def __init__(
+            self,
+            node_dim = 3,
+            embed_dim = 128,
+            n_layers = 2,
+    ):
+        super(CCN, self).__init__()
+        self.init_embed_3d = nn.Linear(node_dim, embed_dim)
+        self.init_embed_2d = nn.Linear(2, embed_dim)
+        self.neighbor_embed = nn.Linear(int(embed_dim * 6), embed_dim)
+        self.init_embed_depot = nn.Linear(2, embed_dim)
+
+    def forward(self, X, mask = None):
+        x = torch.cat((X['loc'], X['deadline'][:,:, None]), 2)
+        x2 = x[:,:,0:2]
+        activ = nn.LeakyReLU()
+        F0_embedding_2d = self.init_embed_2d(x2)
+        F0_embedding_3d = self.init_embed_3d(x)
+        # F0_embedding.reshape([1])
+
+
+        dist_mat = (x2[:, None] - x2[:,:,None]).norm(dim=-1, p=2) ## device to cuda to be added
+        neighbors = dist_mat.sort().indices[:,:,:6] # for 6 neighbours
+        NB_embed  = F0_embedding_2d[:, neighbors][0]
+        size_nb_embed = NB_embed.size()
+        NB_embed_c = F0_embedding_2d[:, neighbors][0].reshape([size_nb_embed[0],size_nb_embed[1],-1])
+        F_neigh_embed = self.neighbor_embed(NB_embed_c)
+        F_embed_final = F_neigh_embed + F0_embedding_3d
+        init_depot_embed = self.init_embed_depot(X['depot'])[:, None, :]
+        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        return (
+            h,  # (batch_size, graph_size, embed_dim)
+            h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
+        )
+        # omega1 = neighbors[neighbors].reshape(self.n_nodes, 36)
+
