@@ -5,7 +5,7 @@ import math
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN
+from nets.graph_encoder import GraphAttentionEncoder, CCN2
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -98,7 +98,7 @@ class AttentionModel(nn.Module):
         #     normalization=normalization
         # ) ## this will be changed for CCN
 
-        self.embedder = CCN(
+        self.embedder = CCN2(
             embed_dim=embedding_dim,
             node_dim=3
         )
@@ -129,8 +129,11 @@ class AttentionModel(nn.Module):
         if self.checkpoint_encoder and self.training:  # Only checkpoint if we need gradients
             embeddings, _ = checkpoint(self.embedder, self._init_embed(input))
         else:
+            import time
+            # start_time = time.time()
             # embeddings, _ = self.embedder(self._init_embed(input))
             embeddings, _ = self.embedder(input)
+            # end_time = time.time() - start_time
 
         _log_p, pi, cost = self._inner(input, embeddings)
         cos, mask = self.problem.get_costs(input, pi)
@@ -229,6 +232,69 @@ class AttentionModel(nn.Module):
         # TSP
         return self.init_embed(input)
 
+    def _inner_eval(self, input, embeddings):
+
+        outputs = []
+        sequences = []
+        tasks_success = []
+
+        state = self.problem.make_state(input)
+        # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
+        fixed = self._precompute(embeddings)
+
+        batch_size = state.ids.size(0)
+
+
+        # Perform decoding steps
+        i = 0
+        # print(state.visited_)
+        # print(state.all_finished().item())
+        # print(state.visited_.all().item())
+        while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
+
+            if self.shrink_size is not None:
+                unfinished = torch.nonzero(state.get_finished() == 0)
+                if len(unfinished) == 0:
+                    break
+                unfinished = unfinished[:, 0]
+                # Check if we can shrink by at least shrink_size and if this leaves at least 16
+                # (otherwise batch norm will not work well and it is inefficient anyway)
+                if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
+                    # Filter states
+                    state = state[unfinished]
+                    fixed = fixed[unfinished]
+
+            log_p, mask = self._get_log_p(fixed, state)
+
+            # Select the indices of the next nodes in the sequences, result (batch_size) long
+            selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
+            # print(selected[0].item(), state.robot_taking_decision[0])
+
+            state = state.update(selected)
+            # cost = torch.div(state.lengths, state.tasks_done_success)
+            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 1.0) #+ torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
+            # Now make log_p, selected desired output size by 'unshrinking'
+            if self.shrink_size is not None and state.ids.size(0) < batch_size:
+                log_p_, selected_ = log_p, selected
+                log_p = log_p_.new_zeros(batch_size, *log_p_.size()[1:])
+                selected = selected_.new_zeros(batch_size)
+
+                log_p[state.ids[:, 0]] = log_p_
+                selected[state.ids[:, 0]] = selected_
+
+            # Collect output of step
+            outputs.append(log_p[:, 0, :])
+            sequences.append(selected)
+            # print(state.all_finished().item() == 0)
+
+            i += 1
+        # print(state.tasks_done_success, cost)
+        # Collected lists, return Tensor
+
+        return torch.stack(outputs, 1), torch.stack(sequences, 1), cost, state.tasks_done_success.tolist()
+
+
+
     def _inner(self, input, embeddings):
 
         outputs = []
@@ -297,9 +363,10 @@ class AttentionModel(nn.Module):
         # Bit ugly but we need to pass the embeddings as well.
         # Making a tuple will not work with the problem.get_cost function
         return sample_many(
-            lambda input: self._inner(*input),  # Need to unpack tuple into arguments
+            lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            (input, self.embedder(self._init_embed(input))[0]),  # Pack input with embeddings (additional input)
+            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
+            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 

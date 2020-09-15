@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 import time
 from datetime import timedelta
 from utils.functions import parse_softmax_temperature
+import matplotlib.pyplot as plt
 mp = torch.multiprocessing.get_context('spawn')
 
 
@@ -72,13 +73,13 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     # This is parallelism, even if we use multiprocessing (we report as if we did not use multiprocessing, e.g. 1 GPU)
     parallelism = opts.eval_batch_size
 
-    costs, tours, durations = zip(*results)  # Not really costs since they should be negative
+    costs, task, durations, tours = zip(*results)  # Not really costs since they should be negative
 
     print("Average cost: {} +- {}".format(np.mean(costs), 2 * np.std(costs) / np.sqrt(len(costs))))
-    print("Average serial duration: {} +- {}".format(
-        np.mean(durations), 2 * np.std(durations) / np.sqrt(len(durations))))
-    print("Average parallel duration: {}".format(np.mean(durations) / parallelism))
-    print("Calculated total duration: {}".format(timedelta(seconds=int(np.sum(durations) / parallelism))))
+    # print("Average serial duration: {} +- {}".format(
+    #     np.mean(durations), 2 * np.std(durations) / np.sqrt(len(durations))))
+    # print("Average parallel duration: {}".format(np.mean(durations) / parallelism))
+    # print("Calculated total duration: {}".format(timedelta(seconds=int(np.sum(durations) / parallelism))))
 
     dataset_basename, ext = os.path.splitext(os.path.split(dataset_path)[-1])
     model_name = "_".join(os.path.normpath(os.path.splitext(opts.model)[0]).split(os.sep)[-2:])
@@ -95,9 +96,9 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     else:
         out_file = opts.o
 
-    assert opts.f or not os.path.isfile(
-        out_file), "File already exists! Try running with -f option to overwrite."
-
+    # assert opts.f or not os.path.isfile(
+    #     out_file), "File already exists! Try running with -f option to overwrite."
+    #
     save_dataset((results, parallelism), out_file)
 
     return costs, tours, durations
@@ -115,6 +116,7 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
     dataloader = DataLoader(dataset, batch_size=opts.eval_batch_size)
 
     results = []
+    tasks_done_total = []
     for batch in tqdm(dataloader, disable=opts.no_progress_bar):
         batch = move_to(batch, device)
 
@@ -137,7 +139,8 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
                     iter_rep = 1
                 assert batch_rep > 0
                 # This returns (batch_size, iter_rep shape)
-                sequences, costs = model.sample_many(batch, batch_rep=batch_rep, iter_rep=iter_rep)
+                sequences, costs, tasks_done = model.sample_many(batch, batch_rep=batch_rep, iter_rep=iter_rep)
+                tasks_done_total.extend(tasks_done)
                 batch_size = len(costs)
                 ids = torch.arange(batch_size, dtype=torch.int64, device=costs.device)
             else:
@@ -159,6 +162,7 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
                 batch_size
             )
         duration = time.time() - start
+        i = 0
         for seq, cost in zip(sequences, costs):
             if model.problem.NAME == "tsp":
                 seq = seq.tolist()  # No need to trim as all are same length
@@ -169,8 +173,11 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
             else:
                 assert False, "Unkown problem: {}".format(model.problem.NAME)
             # Note VRP only
-            results.append((cost, seq, duration))
-
+            results.append((cost, tasks_done_total[i],duration,seq))
+            i +=1
+    # plot tasks done here
+    # plt.plot(tasks_done_total)
+    # plt.show()
     return results
 
 
@@ -180,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("--datasets", nargs='+', default=["data/mrta/mrta100_mrta_seed1234.pkl"], help="Filename of the dataset(s) to evaluate")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument("-o", default=None, help="Name of the results file to write")
-    parser.add_argument('--val_size', type=int, default=100,
+    parser.add_argument('--val_size', type=int, default=10,
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--offset', type=int, default=0,
                         help='Offset where to start in dataset (default 0)')
@@ -195,7 +202,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/mrta_100/run_20200714T010451', type=str)
+    parser.add_argument('--model', default='outputs/mrta_100/run_20200714T010451/tran', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')
