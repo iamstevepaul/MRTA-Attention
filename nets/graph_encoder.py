@@ -284,7 +284,7 @@ class CCN2(nn.Module):
                 phi_2_vw = torch.zeros((omega_2_v.size()[0], self.embed_dim), device=time_deadline.device)
                 for w in omega_2_v:
                     omega_1_w = omega_1[w]
-                    X_2_vw = torch.zeros([len(omega_2_v), len(omega_1_w)])
+                    X_2_vw = torch.zeros([len(omega_2_v), len(omega_1_w)], device=time_deadline.device)
                     for i in range(len(omega_2_v)):
                         v_o2 = omega_2_v[i]
                         for j in range(len(omega_1_w)):
