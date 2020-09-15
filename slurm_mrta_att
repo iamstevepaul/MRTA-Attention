@@ -1,12 +1,12 @@
 #!/bin/sh
 #SBATCH --time=72:00:00
-#SBATCH --partition=scavenger
-#SBATCH --qos=scavenger
+#SBATCH --partition=general-compute
+#SBATCH --qos=general-compute
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:2
 #SBATCH --job-name="mrta_att_stevepau"
-#SBATCH --output=output_mrta_scav_2.out
-#SBATCH --error=error_mrta_scav_2.err
+#SBATCH --output=output_mrta.out
+#SBATCH --error=error_mrta.err
 #SBATCH --mail-user=stevepau@buffalo.edu
 #SBATCH --mail-type=END
 #SBATCH --exclusive
