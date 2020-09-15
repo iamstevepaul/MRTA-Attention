@@ -214,12 +214,12 @@ class CCN2(nn.Module):
             self,
             node_dim = 3,
             embed_dim = 128,
-            number_of_nodes = 500
+            number_of_nodes = 200
     ):
         super(CCN2, self).__init__()
         self.W0 = torch.nn.Linear(node_dim, embed_dim)
         self.W1 = torch.nn.Linear(node_dim, embed_dim)
-        self.neighbour_threshold_distance =  0.0250
+        self.neighbour_threshold_distance =  0.055
         self.embed_dim = embed_dim
         self.number_of_nodes = number_of_nodes
 
