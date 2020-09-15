@@ -231,7 +231,7 @@ class CCN2(nn.Module):
         depot = input['depot']
         # locations = torch.cat((depot, node_locations), dim=0)
         locations = torch.cat((depot[:,None, :], node_locations), dim=1)
-        time_deadline = torch.cat((torch.zeros(time_deadline.size()[0], 1), time_deadline), dim=1)
+        time_deadline = torch.cat((torch.zeros(time_deadline.size()[0], 1, device=time_deadline.device), time_deadline), dim=1)
         # start_time = time.time()
 
         # define neighbouring point
@@ -262,11 +262,11 @@ class CCN2(nn.Module):
 
             fv_1 = []
             for v in vertices:
-                omega_1_v = torch.tensor(list(omega_1[v]))
-                phi_1_vw = torch.zeros((omega_1_v.size()[0], self.embed_dim))
+                omega_1_v = torch.tensor(list(omega_1[v]), device=time_deadline.device)
+                phi_1_vw = torch.zeros((omega_1_v.size()[0], self.embed_dim), device=time_deadline.device)
                 for w in omega_1_v:
                     omega_0_w = omega_0[w]
-                    X_1_vw = torch.zeros([len(omega_1_v), 1])
+                    X_1_vw = torch.zeros([len(omega_1_v), 1], device=time_deadline.device)
 
                     for i in range(len(omega_1_v)):
                         v_o1 = omega_1_v[i]
