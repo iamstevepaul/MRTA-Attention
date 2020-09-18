@@ -176,15 +176,15 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
             results.append((cost, tasks_done_total[i],duration,seq))
             i +=1
     # plot tasks done here
-    # plt.plot(tasks_done_total)
-    # plt.show()
+    plt.plot(tasks_done_total)
+    plt.show()
     return results
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--datasets", nargs='+', default=["data/mrta/mrta100_mrta_seed1234.pkl"], help="Filename of the dataset(s) to evaluate")
+    parser.add_argument("--datasets", nargs='+', default=["data/mrta/mrta200_mrta_seed1234.pkl"], help="Filename of the dataset(s) to evaluate")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument("-o", default=None, help="Name of the results file to write")
     parser.add_argument('--val_size', type=int, default=10,
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/mrta_100/run_20200714T010451/tran', type=str)
+    parser.add_argument('--model', default='outputs/Results_200', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')

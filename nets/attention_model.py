@@ -236,14 +236,12 @@ class AttentionModel(nn.Module):
 
         outputs = []
         sequences = []
-        tasks_success = []
 
         state = self.problem.make_state(input)
         # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
         fixed = self._precompute(embeddings)
 
         batch_size = state.ids.size(0)
-
 
         # Perform decoding steps
         i = 0
@@ -272,7 +270,8 @@ class AttentionModel(nn.Module):
 
             state = state.update(selected)
             # cost = torch.div(state.lengths, state.tasks_done_success)
-            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 1.0) #+ torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
+            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
+                torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -365,8 +364,8 @@ class AttentionModel(nn.Module):
         return sample_many(
             lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
-            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
+            (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
+            # (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 
