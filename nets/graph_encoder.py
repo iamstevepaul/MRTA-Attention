@@ -218,7 +218,8 @@ class CCN2(nn.Module):
     ):
         super(CCN2, self).__init__()
         self.W0 = torch.nn.Linear(node_dim, embed_dim)
-        self.W1 = torch.nn.Linear(node_dim, embed_dim)
+        self.W1 = torch.nn.Linear(embed_dim, embed_dim)
+        self.W2 = torch.nn.Linear(embed_dim, embed_dim)
         self.neighbour_threshold_distance =  0.055
         self.embed_dim = embed_dim
         self.number_of_nodes = number_of_nodes
@@ -297,7 +298,10 @@ class CCN2(nn.Module):
             # print(time.time() - start_time, ' Seconds')
             fv_2 = torch.stack(fv_2)
             Fv_2.append(fv_2)
+
         Fv_2 = torch.stack(Fv_2)
+        rl = nn.ReLU()
+        Fv_2 = rl(self.W2(Fv_2))
         return (
             Fv_2,  # (batch_size, graph_size, embed_dim)
             Fv_2.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)

@@ -73,6 +73,7 @@ class AttentionModel(nn.Module):
         self.n_heads = n_heads
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
+        torch.autograd.set_detect_anomaly(True)
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -84,7 +85,12 @@ class AttentionModel(nn.Module):
         node_dim = 3  # x, y, demand / prize
 
         if self.is_mrta:
-            step_context_dim = embedding_dim + 2
+            n_robot = 20
+            step_context_dim = embedding_dim + 1 + 1 + 1 + n_robot*(embedding_dim + 1 + 1)#embedding_dim + 2
+
+
+
+            step_context_dim_new = embedding_dim + 1 + 1 + 1 + n_robot*(embedding_dim + 1 + 1)
 
         # Special embedding projection for depot node
         self.init_embed_depot = nn.Linear(2, embedding_dim)
@@ -332,8 +338,9 @@ class AttentionModel(nn.Module):
             # print(selected[0].item(), state.robot_taking_decision[0])
 
             state = state.update(selected)
+
             # cost = torch.div(state.lengths, state.tasks_done_success)
-            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
+            # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -351,7 +358,10 @@ class AttentionModel(nn.Module):
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
-
+        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        u = (r == 0).double()
+        cost = r - torch.mul(u, torch.exp(-d))
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):
@@ -486,12 +496,11 @@ class AttentionModel(nn.Module):
                 )
 
         else:
-            # print('Embeddings: ', embeddings.is_cuda)
-            # print('Current node: ', current_node.is_cuda)
-            # print('State time: ', state.current_time.is_cuda)
-            # print('State robot taking decision: ', state.robot_taking_decision_range.is_cuda)
+            robots_current_destination = state.robots_current_destination.clone()
+
             return torch.cat(
                 (
+                    state.current_time[:, :, None],
                     torch.gather(
                         embeddings,
                         1,
@@ -499,12 +508,49 @@ class AttentionModel(nn.Module):
                             .view(batch_size, num_steps, 1)
                             .expand(batch_size, num_steps, embeddings.size(-1))
                     ).view(batch_size, num_steps, embeddings.size(-1)),
-                    state.current_time[:, :, None], ## can be modified by adding the difference of current time and the deadline
-                    state.robot_taking_decision_range[:, :, None]
+                    ## can be modified by adding the difference of current time and the deadline
+                    state.robot_taking_decision_range[:, :, None],
+                    state.robots_capacity[state.ids, state.robot_taking_decision].view(batch_size, 1,-1),
+                    torch.gather(
+                embeddings,
+                1,
+                robots_current_destination.contiguous().view(batch_size,
+                                                                   20,
+                                                                   1).expand(batch_size,
+                                                                             20,
+                                                                             embeddings.size(-1))
+            ).reshape((batch_size,1,-1)),
+                    state.robots_range_remaining.view(batch_size, 1,-1),
+                    state.robots_capacity.view(batch_size, 1,-1)
+                    # state.ro
                     # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
                 ),
                 -1
             )
+            # return vec
+            # print('Embeddings: ', embeddings.is_cuda)
+            # print('Current node: ', current_node.is_cuda)
+            # print('State time: ', state.current_time.is_cuda)
+            # print('State robot taking decision: ', state.robot_taking_decision_range.is_cuda)
+            # return torch.cat(
+            #     (
+            #         torch.gather(
+            #             embeddings,
+            #             1,
+            #             current_node.contiguous()
+            #                 .view(batch_size, num_steps, 1)
+            #                 .expand(batch_size, num_steps, embeddings.size(-1))
+            #         ).view(batch_size, num_steps, embeddings.size(-1)),
+            #         state.current_time[:, :, None], ## can be modified by adding the difference of current time and the deadline
+            #         state.robot_taking_decision_range[:, :, None]
+            #         # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
+            #     ),
+            #     -1
+            # )
+### new stuffs
+
+
+
 
 
     def _one_to_many_logits(self, query, glimpse_K, glimpse_V, logit_K, mask):
