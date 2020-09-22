@@ -2,7 +2,6 @@ import torch
 import numpy as np
 from torch import nn
 import math
-import torch_geometric
 
 class SkipConnection(nn.Module):
 
