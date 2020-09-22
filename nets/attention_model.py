@@ -5,7 +5,7 @@ import math
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN2
+from nets.graph_encoder import GraphAttentionEncoder, CCN
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -97,17 +97,17 @@ class AttentionModel(nn.Module):
 
         self.init_embed = nn.Linear(node_dim, embedding_dim)
 
-        self.embedder = GraphAttentionEncoder(
-            n_heads=n_heads,
-            embed_dim=embedding_dim,
-            n_layers=self.n_encode_layers,
-            normalization=normalization
-        ) ## this will be changed for CCN
-
-        # self.embedder = CCN2(
+        # self.embedder = GraphAttentionEncoder(
+        #     n_heads=n_heads,
         #     embed_dim=embedding_dim,
-        #     node_dim=3
-        # )
+        #     n_layers=self.n_encode_layers,
+        #     normalization=normalization
+        # ) ## this will be changed for CCN
+
+        self.embedder = CCN(
+            embed_dim=embedding_dim,
+            node_dim=3
+        )
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -137,8 +137,8 @@ class AttentionModel(nn.Module):
         else:
             import time
             # start_time = time.time()
-            embeddings, _ = self.embedder(self._init_embed(input))
-            # embeddings, _ = self.embedder(input)
+            # embeddings, _ = self.embedder(self._init_embed(input))
+            embeddings, _ = self.embedder(input)
             # end_time = time.time() - start_time
 
         _log_p, pi, cost = self._inner(input, embeddings)
