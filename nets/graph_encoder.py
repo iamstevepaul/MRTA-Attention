@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from torch import nn
 import math
-
+import torch_geometric
 
 class SkipConnection(nn.Module):
 
@@ -245,8 +245,9 @@ class CCN2(nn.Module):
         rl = torch.nn.ReLU()
         fv_0 = rl(dt)
         Fv_2 = []
+        omega_0 = vertices
         for samp in range(locations.size()[0]):
-            omega_0 = vertices
+
 
             omega_1 = []
             for i in vertices:

@@ -187,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("--datasets", nargs='+', default=["data/mrta/mrta200_mrta_seed1234.pkl"], help="Filename of the dataset(s) to evaluate")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument("-o", default=None, help="Name of the results file to write")
-    parser.add_argument('--val_size', type=int, default=10,
+    parser.add_argument('--val_size', type=int, default=100,
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--offset', type=int, default=0,
                         help='Offset where to start in dataset (default 0)')
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/Results_200', type=str)
+    parser.add_argument('--model', default='outputs/Results_200_CCN', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')

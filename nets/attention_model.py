@@ -97,17 +97,17 @@ class AttentionModel(nn.Module):
 
         self.init_embed = nn.Linear(node_dim, embedding_dim)
 
-        # self.embedder = GraphAttentionEncoder(
-        #     n_heads=n_heads,
-        #     embed_dim=embedding_dim,
-        #     n_layers=self.n_encode_layers,
-        #     normalization=normalization
-        # ) ## this will be changed for CCN
-
-        self.embedder = CCN2(
+        self.embedder = GraphAttentionEncoder(
+            n_heads=n_heads,
             embed_dim=embedding_dim,
-            node_dim=3
-        )
+            n_layers=self.n_encode_layers,
+            normalization=normalization
+        ) ## this will be changed for CCN
+
+        # self.embedder = CCN2(
+        #     embed_dim=embedding_dim,
+        #     node_dim=3
+        # )
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -137,8 +137,8 @@ class AttentionModel(nn.Module):
         else:
             import time
             # start_time = time.time()
-            # embeddings, _ = self.embedder(self._init_embed(input))
-            embeddings, _ = self.embedder(input)
+            embeddings, _ = self.embedder(self._init_embed(input))
+            # embeddings, _ = self.embedder(input)
             # end_time = time.time() - start_time
 
         _log_p, pi, cost = self._inner(input, embeddings)
@@ -276,8 +276,8 @@ class AttentionModel(nn.Module):
 
             state = state.update(selected)
             # cost = torch.div(state.lengths, state.tasks_done_success)
-            cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
-                torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
+            # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
+            #     torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -295,7 +295,10 @@ class AttentionModel(nn.Module):
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
-
+        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        u = (r == 0).double()
+        cost = r - torch.mul(u, torch.exp(-d))
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost, state.tasks_done_success.tolist()
 
 
