@@ -375,7 +375,7 @@ class CCN(nn.Module):
         F_neigh_embed = self.neighbor_embed(NB_embed_c)
         F_embed_final = F_neigh_embed + F0_embedding_3d
         init_depot_embed = self.init_embed_depot(X['depot'])[:, None, :]
-        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        h = activ(torch.cat((init_depot_embed, F_embed_final), -2))
         return (
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
