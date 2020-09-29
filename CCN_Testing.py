@@ -3,6 +3,45 @@ import numpy as np
 import time
 from torch import nn
 
+
+class CCN3(nn.Module):
+
+    def __init__(
+            self,
+            node_dim = 3,
+            embed_dim = 128,
+            n_layers = 2,
+    ):
+        super(CCN3, self).__init__()
+        self.init_embed = nn.Linear(node_dim, embed_dim)
+        self.init_neighbour_embed = nn.Linear(node_dim, embed_dim)
+        self.neighbour_encode = nn.Linear(node_dim, embed_dim)
+        self.init_embed_depot = nn.Linear(2, embed_dim)
+        self.final_embedding = nn.Linear(embed_dim, embed_dim)
+
+    def forward(self, X, mask=None):
+        x = torch.cat((X['loc'], X['deadline'][:, :, None]), 2)
+        x2 = x[:, :, 0:2]
+        activ = nn.LeakyReLU()
+        # F0_embedding_2d = self.init_embed_2d(x2)
+        F0_embedding_3d = self.init_embed(x)
+        # F0_embedding.reshape([1])
+
+        dist_mat = (x2[:, None] - x2[:, :, None]).norm(dim=-1, p=2)  ## device to cuda to be added
+        neighbors = dist_mat.sort().indices[:, :, :6]  # for 6 neighbours
+        neighbour = x[:, neighbors][0]
+        neighbour_delta = neighbour - x[:, :, None, :]
+        neighbour_delta_embedding = self.neighbour_encode(neighbour_delta)
+        concat = torch.cat((F0_embedding_3d[:,:,None,:], neighbour_delta_embedding), 2)
+
+        F_embed_final = self.final_embedding(concat).sum(dim=2)
+        init_depot_embed = self.init_embed_depot(X['depot'])[:, None, :]
+        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        return (
+            h,  # (batch_size, graph_size, embed_dim)
+            h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
+        )
+
 class CCN(nn.Module):
 
     def __init__(
@@ -91,12 +130,21 @@ class CCN(nn.Module):
 
 
 if __name__ == "__main__":
-    num_locations = 500
-    node_locations = torch.rand([num_locations,2])
-    time_deadline = torch.rand([num_locations,1])
+    num_locations = 10
+    num_samples = 2
+    data = {
+            'loc': torch.FloatTensor(num_samples, num_locations, 2).uniform_(0, 1),
+            'depot': torch.FloatTensor(num_samples,2).uniform_(0, 1),
+            'deadline': torch.FloatTensor(num_samples, num_locations).uniform_(0.1, 1)
+        }
+
+
+
+    # node_locations = torch.rand([num_locations,2])
+    # time_deadline = torch.rand([num_locations,1])
     # fv_2 = get_CCN_encoding(node_locations, time_deadline)
-    ccn = CCN()
-    fv_2 = ccn(node_locations, time_deadline)
+    ccn = CCN3()
+    fv_2 = ccn(data)
 
     # torch.save(
     #     {
