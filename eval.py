@@ -49,6 +49,16 @@ def eval_dataset_mp(args):
 
     return _eval_dataset(model, dataset, width, softmax_temp, opts, device)
 
+def get_tasks(dataset, task_size):
+    for i in range(dataset.size):
+        data = dataset.data[i]
+        loc = data['loc'][0:task_size]
+        deadline = data['deadline'][0:task_size]
+        dataset.data[i]['loc'] = loc
+        dataset.data[i]['deadline'] = deadline
+
+    return dataset
+
 
 def eval_dataset(dataset_path, width, softmax_temp, opts):
     # Even with multiprocessing, we load the model here since it contains the name where to write results
@@ -68,6 +78,8 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     else:
         device = torch.device("cuda:0" if use_cuda else "cpu")
         dataset = model.problem.make_dataset(filename=dataset_path, num_samples=opts.val_size, offset=opts.offset)
+        task_size = 200
+        # dataset = get_tasks(dataset, task_size)
         results = _eval_dataset(model, dataset, width, softmax_temp, opts, device)
 
     # This is parallelism, even if we use multiprocessing (we report as if we did not use multiprocessing, e.g. 1 GPU)
@@ -75,7 +87,7 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
 
     costs, task, durations, tours = zip(*results)  # Not really costs since they should be negative
 
-    print("Average cost: {} +- {}".format(np.mean(costs), 2 * np.std(costs) / np.sqrt(len(costs))))
+    # print("Average cost: {} +- {}".format(np.mean(costs), 2 * np.std(costs) / np.sqrt(len(costs))))
     # print("Average serial duration: {} +- {}".format(
     #     np.mean(durations), 2 * np.std(durations) / np.sqrt(len(durations))))
     # print("Average parallel duration: {}".format(np.mean(durations) / parallelism))
@@ -96,9 +108,12 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     else:
         out_file = opts.o
 
+        # out_file = 'results/mrta/mrta200_mrta_seed1234/mrta_50_Nodes_20_Agents_CAM_Results.pkl'
+
     # assert opts.f or not os.path.isfile(
     #     out_file), "File already exists! Try running with -f option to overwrite."
     #
+    # out_file = 'results/mrta/mrta200_mrta_seed1234/mrta_100_Nodes_20_Agents_AM_Results.pkl'
     save_dataset((results, parallelism), out_file)
 
     return costs, tours, durations
@@ -173,7 +188,7 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
             else:
                 assert False, "Unkown problem: {}".format(model.problem.NAME)
             # Note VRP only
-            results.append((cost, tasks_done_total[i],duration,seq))
+            results.append({"cost":cost, "tasks_done": tasks_done_total[i][0],"total_duration":duration, "sequence":seq})
             i +=1
     # plot tasks done here
     plt.plot(tasks_done_total)
@@ -202,7 +217,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/Results_200_CCN_Simple_latest', type=str)
+    parser.add_argument('--model', default='outputs/Results_200_Att_Latest', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')

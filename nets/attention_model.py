@@ -4,6 +4,7 @@ from torch.utils.checkpoint import checkpoint
 import math
 from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
+import time
 
 from nets.graph_encoder import GraphAttentionEncoder, CCN3
 from torch.nn import DataParallel
@@ -97,17 +98,17 @@ class AttentionModel(nn.Module):
 
         self.init_embed = nn.Linear(node_dim, embedding_dim)
 
-        # self.embedder = GraphAttentionEncoder(
-        #     n_heads=n_heads,
-        #     embed_dim=embedding_dim,
-        #     n_layers=self.n_encode_layers,
-        #     normalization=normalization
-        # ) ## this will be changed for CCN
-
-        self.embedder = CCN3(
+        self.embedder = GraphAttentionEncoder(
+            n_heads=n_heads,
             embed_dim=embedding_dim,
-            node_dim=3
-        )
+            n_layers=self.n_encode_layers,
+            normalization=normalization
+        ) ## this will be changed for CCN
+
+        # self.embedder = CCN3(
+        #     embed_dim=embedding_dim,
+        #     node_dim=3
+        # )
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -254,7 +255,9 @@ class AttentionModel(nn.Module):
         # print(state.visited_)
         # print(state.all_finished().item())
         # print(state.visited_.all().item())
+        time_sl = []
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
+            start_time = time.time()
 
             if self.shrink_size is not None:
                 unfinished = torch.nonzero(state.get_finished() == 0)
@@ -273,8 +276,9 @@ class AttentionModel(nn.Module):
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
             # print(selected[0].item(), state.robot_taking_decision[0])
-
+            end_time1 = time.time() - start_time
             state = state.update(selected)
+            start_time2 = time.time()
             # cost = torch.div(state.lengths, state.tasks_done_success)
             # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
             #     torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
@@ -293,8 +297,15 @@ class AttentionModel(nn.Module):
             # print(state.all_finished().item() == 0)
 
             i += 1
+            end_time2 = time.time() - start_time2
+            time_sl.append(end_time1+end_time2)
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
+        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        u = (r == 0).double()
+        cost = r - torch.mul(u, torch.exp(-d))
+
         r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         u = (r == 0).double()
@@ -377,8 +388,8 @@ class AttentionModel(nn.Module):
         return sample_many(
             lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
-            # (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
+            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
+            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 
