@@ -15,6 +15,7 @@ class StateMRTA(NamedTuple):
     # If this state contains multiple copies (i.e. beam search) for the same instance, then for memory efficiency
     # the coords and demands tensors are not kept multiple times, so we need to use the ids to index the correct rows.
     ids: torch.Tensor  # Keeps track of original fixed data index of rows (this is basically the ids for all the location, which are considered as integers)
+    active_tasks: torch.Tensor
 
 
 
@@ -31,6 +32,7 @@ class StateMRTA(NamedTuple):
     robots_current_destination: torch.Tensor
     robots_start_point: torch.Tensor
     robot_taking_decision_range: torch.Tensor
+    robot_depot_association: torch.Tensor
 
 
     #general - frequent changing variable
@@ -60,17 +62,23 @@ class StateMRTA(NamedTuple):
     i: torch.Tensor  # Keeps track of step
 
     # VEHICLE_CAPACITY = 1.0  # Hardcoded
-    n_nodes = 200
-    n_agents = 20
-    max_range = 4
-    max_capacity = 10
-    max_speed = 10
+
+    n_agents : torch.Tensor
+    max_range :torch.Tensor
+    max_capacity : torch.Tensor
+    max_speed : torch.Tensor
+    enable_capacity_constraint: torch.Tensor
+    enable_range_constraint: torch.Tensor
+    n_nodes: torch.Tensor
+    initial_size: torch.Tensor
+    n_depot: torch.Tensor
+
 
 
     @property
     def visited(self):
         if self.visited_.dtype == torch.uint8:
-            return self.visited_[:,:,1:]
+            return self.visited_[:,:,self.n_depot:]
         else:
             return mask_long2bool(self.visited_, n=self.demand.size(-1))
 
@@ -94,18 +102,26 @@ class StateMRTA(NamedTuple):
     #     return len(self.used_capacity)
 
     @staticmethod
-    def initialize(input, visited_dtype=torch.uint8):
-
+    def initialize(input,
+                   visited_dtype=torch.uint8):
+        # input = input_data['data']
         depot = input['depot']
         loc = input['loc']
-        n_agents = 20
-        max_range = 4
-        max_capacity = 10
-        max_speed = 10
-        coords = torch.cat((depot[:, None, :], loc), -2).to(device=loc.device)
+        max_speed = input['max_speed'][0].item()
+        coords = torch.cat((depot[:, :], loc), -2).to(device=loc.device)
         distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1).to(device=loc.device)
         time_matrix = torch.mul(distance_matrix, (1/max_speed)).to(device=loc.device)
         deadline = input['deadline']
+        n_agents = input['n_agents'][0].item()
+        max_range = input['max_range'][0].item()
+        max_capacity = input['max_capacity'][0].item()
+        max_speed = input['max_speed'][0].item()
+        enable_capacity_constraint = input['enable_capacity_constraint'][0].item()
+        enable_range_constraint=input['enable_range_constraint'][0].item()
+        initial_size = input['initial_size'][0].item()
+        n_depot = input['depot'].size()[1]
+
+
         # n_nodes = torch.tensor(loc.size()[1], dtype=torch.uint8)
 
         batch_size, n_loc, _ = loc.size()
@@ -147,8 +163,18 @@ class StateMRTA(NamedTuple):
             robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
-            depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device)
-            # n_nodes = n_nodes
+            depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
+            max_capacity = max_capacity,
+            n_agents = n_agents,
+            max_range = max_range,
+            enable_capacity_constraint = enable_capacity_constraint,
+            enable_range_constraint = enable_range_constraint,
+            n_nodes = input['loc'].size()[1],
+            initial_size = initial_size,
+            n_depot=n_depot,
+            max_speed = max_speed,
+            robot_depot_association = torch.randint(0,input['depot'].size()[1], (batch_size, n_agents)),
+            active_tasks = torch.arange(n_depot, initial_size).expand(batch_size, initial_size - n_depot)
         )
 
     def get_final_cost(self):
@@ -205,7 +231,7 @@ class StateMRTA(NamedTuple):
             distance_new = self.distance_matrix[non_zero_indices[:, 0], self.robots_current_destination[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)].view(-1), selected[non_zero_indices[:, 0]].view(-1)]
             robots_range_remaining[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)] -= distance_new
             if intersection.size()[0] > 0:
-                self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1
+                # self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1*int(self.enable_capacity_constraint) # this has to be uncommented for capacity constraints
                 self.tasks_done_success[intersection] +=1
             self.tasks_visited[non_zero_indices[:,0]] += 1
 
@@ -268,23 +294,24 @@ class StateMRTA(NamedTuple):
         else:
             visited_loc = mask_long2bool(self.visited_)
 
-        mask_loc = visited_loc.to(torch.bool) #| exceeds_cap
+        mask_loc = visited_loc.to(torch.bool)  # | exceeds_cap
 
         robot_taking_decision = self.robot_taking_decision
 
         # Cannot visit the depot if just visited and still unserved nodes
-        mask_depot = (self.robots_current_destination[self.ids,robot_taking_decision] == 0) & ((mask_loc == 0).int().sum(-1) > 0)
+        mask_depot = (self.robots_current_destination[self.ids, robot_taking_decision] == 0) & (
+                    (mask_loc == 0).int().sum(-1) > 0)
         full_mask = torch.cat((mask_depot[:, :, None], mask_loc), -1)
         robot_taking_decision = self.robot_taking_decision
         capacity = self.robots_capacity[self.ids, robot_taking_decision]
-        zero_capacity_ind = (capacity[:,0] < 1).nonzero()
+        zero_capacity_ind = (capacity[:, 0] < 1).nonzero()
 
         if zero_capacity_ind.size()[0] > 0:
-            full_mask[zero_capacity_ind[:,0],:,1:] = True
+            full_mask[zero_capacity_ind[:, 0], :, 1:] = True
 
         non_zero_capacity_ind = (capacity[:, 0] > 0).nonzero()
         if non_zero_capacity_ind.size()[0] > 0:
-            robot_dest = self.robots_current_destination[self.ids[:,0], robot_taking_decision[self.ids[:,0]].view(-1)]
+            robot_dest = self.robots_current_destination[self.ids[:, 0], robot_taking_decision[self.ids[:, 0]].view(-1)]
             non_zero_robot_dest = (robot_dest != 0).nonzero()
             combined = torch.cat((non_zero_capacity_ind[:, 0], non_zero_robot_dest[:, 0]))
             uniques, counts = combined.unique(return_counts=True)
@@ -295,25 +322,9 @@ class StateMRTA(NamedTuple):
                 # nodes = torch.arange(1, self.n_nodes+1)
                 d1 = self.distance_matrix[intersection, robot_dest[intersection].view(-1)]
                 d2 = self.distance_matrix[intersection, 0]
-                avail_range_expand = avail_range.T.expand(self.n_nodes+1,avail_range.size()[0]).T
-                set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1+d2)
-                full_mask[intersection,:,1:] = set_true[:, None,1:]
-
-        # full_mask[:,:,0] = False
-        # for id in self.ids:
-        #
-        #     if capacity[id].item() < 1: ## done
-        #         full_mask[id, :, 1:] = True
-        #     else:
-        #         avail_range = self.robots_range_remaining[id, robot_taking_decision[id].item()].item() ## done
-        #         robot_dest = self.robots_current_destination[id, robot_taking_decision[id].item()].item()
-        #         if robot_dest != 0:
-        #             for i in range(self.n_nodes):
-        #                 d1 = self.distance_matrix[id, robot_dest, i+1].item()
-        #                 d2 = self.distance_matrix[id, i+1, 0].item()
-        #                 if not full_mask[id,:,i+1].item() and avail_range < d1+d2:
-        #                     full_mask[id, :, i + 1] = True
-
+                avail_range_expand = avail_range.T.expand(self.n_nodes + 1, avail_range.size()[0]).T
+                set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1 + d2)
+                full_mask[intersection, :, 1:] = set_true[:, None, 1:]
         return full_mask
 
     def construct_solutions(self, actions):

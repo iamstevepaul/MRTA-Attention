@@ -11,7 +11,7 @@ class MRTA(object):
 
     NAME = 'mrta'  # Capacitated Vehicle Routing Problem
 
-    VEHICLE_CAPACITY = 1.0  # (w.l.o.g. vehicle capacity is 1, demands should be scaled)
+    # VEHICLE_CAPACITY = 1.0  # (w.l.o.g. vehicle capacity is 1, demands should be scaled)
 
     @staticmethod
     def get_costs(dataset, pi):
@@ -26,25 +26,9 @@ class MRTA(object):
             sorted_pi[:, -graph_size:]
         ).all() and (sorted_pi[:, :-graph_size] == 0).all(), "Invalid tour"
 
-        # Visiting depot resets capacity so we add demand = -capacity (we make sure it does not become negative)
-        # demand_with_depot = torch.cat(
-        #     (
-        #         torch.full_like(dataset['demand'][:, :1], -MRTA.VEHICLE_CAPACITY),
-        #         dataset['demand']
-        #     ),
-        #     1
-        # )
-        # d = demand_with_depot.gather(1, pi)
-
-        # used_cap = torch.zeros_like(dataset['demand'][:, 0])
-        # for i in range(pi.size(1)):
-        #     used_cap += d[:, i]  # This will reset/make capacity negative if i == 0, e.g. depot visited
-        #     # Cannot use less than 0
-        #     used_cap[used_cap < 0] = 0
-            # assert (used_cap <= MRTA.VEHICLE_CAPACITY + 1e-5).all(), "Used more than capacity"
 
         # Gather dataset in order of tour
-        loc_with_depot = torch.cat((dataset['depot'][:, None, :], dataset['loc']), 1)
+        loc_with_depot = torch.cat((dataset['depot'][:, :], dataset['loc']), 1)
         d = loc_with_depot.gather(1, pi[..., None].expand(*pi.size(), loc_with_depot.size(-1)))
         # Length is distance (L2-norm of difference) of each next location to its prev and of first and last to depot
         cost = (
@@ -97,7 +81,18 @@ def make_instance(args):
 
 class MRTADataset(Dataset):
     
-    def __init__(self, filename=None, size=50, num_samples=1000000, offset=0, distribution=None):
+    def __init__(self, filename=None, size=50, num_samples=1000000, offset=0,
+                 n_depot = 1,
+                 initial_size = None,
+                 deadline_min = None,
+                 deadline_max=None,
+                 n_agents = 20,
+                 max_range = 4,
+                 max_capacity = 10,
+                 max_speed = 10,
+                 enable_capacity_constraint = False,
+                 enable_range_constraint=True,
+                 distribution=None):
         super(MRTADataset, self).__init__()
 
         self.data_set = []
@@ -113,11 +108,19 @@ class MRTADataset(Dataset):
             self.data = [
                 {
                     'loc': torch.FloatTensor(size, 2).uniform_(0, 1),
-                    'depot': torch.FloatTensor(2).uniform_(0, 1),
-                    'deadline':torch.FloatTensor(size).uniform_(0.1,1)
+                    'depot': torch.FloatTensor(n_depot,2).uniform_(0, 1),
+                    'deadline':torch.FloatTensor(size).uniform_(deadline_min,deadline_max),
+                    'initial_size':initial_size,
+                    'n_agents':n_agents,
+                    'max_range':max_range,
+                    'max_capacity':max_capacity,
+                    'max_speed':max_speed,
+                    'enable_capacity_constraint':enable_capacity_constraint,
+                    'enable_range_constraint':enable_range_constraint
                 }
                 for i in range(num_samples)
             ]
+
 
         self.size = len(self.data)
 

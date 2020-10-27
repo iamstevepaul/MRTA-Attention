@@ -114,7 +114,12 @@ def run(opts):
 
     # Start the actual training loop
     val_dataset = problem.make_dataset(
-        size=opts.graph_size, num_samples=opts.val_size, filename=opts.val_dataset, distribution=opts.data_distribution)
+        size=opts.graph_size, num_samples=opts.val_size, filename=opts.val_dataset,
+        initial_size=opts.initial_size,
+        n_depot=opts.n_depot,
+        deadline_min=opts.deadline_min,
+        deadline_max=opts.deadline_max,
+        distribution=opts.data_distribution)
 
     if opts.resume:
         epoch_resume = int(os.path.splitext(os.path.split(opts.resume)[-1])[0].split("-")[1])

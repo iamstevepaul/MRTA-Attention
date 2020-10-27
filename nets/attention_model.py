@@ -75,6 +75,8 @@ class AttentionModel(nn.Module):
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
         torch.autograd.set_detect_anomaly(True)
+        self.robots_state_query_embed = nn.Linear(5, embedding_dim)
+        self.robot_taking_decision_query = nn.Linear(3, embedding_dim)
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -91,30 +93,32 @@ class AttentionModel(nn.Module):
 
 
 
-            step_context_dim_new = embedding_dim + 1 + 1 + 1 + n_robot*(embedding_dim + 1 + 1)
+            step_context_dim_new = embedding_dim + embedding_dim + 1
 
         # Special embedding projection for depot node
         self.init_embed_depot = nn.Linear(2, embedding_dim)
 
         self.init_embed = nn.Linear(node_dim, embedding_dim)
 
-        self.embedder = GraphAttentionEncoder(
-            n_heads=n_heads,
-            embed_dim=embedding_dim,
-            n_layers=self.n_encode_layers,
-            normalization=normalization
-        ) ## this will be changed for CCN
 
-        # self.embedder = CCN3(
+
+        # self.embedder = GraphAttentionEncoder(
+        #     n_heads=n_heads,
         #     embed_dim=embedding_dim,
-        #     node_dim=3
-        # )
+        #     n_layers=self.n_encode_layers,
+        #     normalization=normalization
+        # ) ## this will be changed for CCN
+
+        self.embedder = CCN3(
+            embed_dim=embedding_dim,
+            node_dim=3
+        )
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
         self.project_node_embeddings = nn.Linear(embedding_dim, 3 * embedding_dim, bias=False)
         self.project_fixed_context = nn.Linear(embedding_dim, embedding_dim, bias=False)
-        self.project_step_context = nn.Linear(step_context_dim, embedding_dim, bias=False)
+        self.project_step_context = nn.Linear(step_context_dim_new, embedding_dim, bias=False)
         self.project_context_cur_loc = nn.Linear(2, embedding_dim, bias=False)
         assert embedding_dim % n_heads == 0
         # Note n_heads * val_dim == embedding_dim so input to project_out is embedding_dim
@@ -143,7 +147,8 @@ class AttentionModel(nn.Module):
             # end_time = time.time() - start_time
 
         _log_p, pi, cost = self._inner(input, embeddings)
-        cos, mask = self.problem.get_costs(input, pi)
+        # cos, mask = self.problem.get_costs(input, pi)
+        mask = None
         # Log likelyhood is calculated within the model since returning it per action does not work well with
         # DataParallel since sequences can be of different lengths
         ll = self._calc_log_likelihood(_log_p, pi, mask)
@@ -207,37 +212,23 @@ class AttentionModel(nn.Module):
 
     def _init_embed(self, input):
 
-        if self.is_vrp:
-            features = ('demand', )
-            return torch.cat(
-                (
-                    self.init_embed_depot(input['depot'])[:, None, :],
-                    self.init_embed(torch.cat((
-                        input['loc'],
-                        *(input[feat][:, :, None] for feat in features)
-                    ), -1))
-                ),
-                1
-            )
-        else:
-            features = ('deadline',)
-            # print(self.init_embed(torch.cat((
-            #             input['loc'],
-            #             *(input[feat][:, :, None] for feat in features)
-            #         ), -1)))
+        features = ('deadline',)
+        # print(self.init_embed(torch.cat((
+        #             input['loc'],
+        #             *(input[feat][:, :, None] for feat in features)
+        #         ), -1)))
 
-            return torch.cat(
-                (
-                    self.init_embed_depot(input['depot'])[:, None, :],
-                    self.init_embed(torch.cat((
-                        input['loc'],
-                        *(input[feat][:, :, None] for feat in features)
-                    ), -1))
-                ),
-                1
-            )
+        return torch.cat(
+            (
+                self.init_embed_depot(input['depot'])[:, None, :],
+                self.init_embed(torch.cat((
+                    input['loc'],
+                    *(input[feat][:, :, None] for feat in features)
+                ), -1))
+            ),
+            1
+        )
         # TSP
-        return self.init_embed(input)
 
     def _inner_eval(self, input, embeddings):
 
@@ -331,6 +322,8 @@ class AttentionModel(nn.Module):
         # print(state.visited_)
         # print(state.all_finished().item())
         # print(state.visited_.all().item())
+
+        #initial tasks
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
 
             if self.shrink_size is not None:
@@ -345,6 +338,8 @@ class AttentionModel(nn.Module):
                     state = state[unfinished]
                     fixed = fixed[unfinished]
 
+            # Only the required ones goes here, so we should
+            #  We need a variable that track which all tasks are available
             log_p, mask = self._get_log_p(fixed, state)
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
@@ -353,8 +348,7 @@ class AttentionModel(nn.Module):
 
             state = state.update(selected)
 
-            # cost = torch.div(state.lengths, state.tasks_done_success)
-            # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(torch.div(state.lengths, float(state.n_nodes)*1.414),0.2)
+
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -369,6 +363,7 @@ class AttentionModel(nn.Module):
             sequences.append(selected)
             # print(state.all_finished().item() == 0)
 
+            act = state.active_tasks
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
@@ -450,7 +445,6 @@ class AttentionModel(nn.Module):
     def _get_log_p(self, fixed, state, normalize=True):
 
         # Compute query = context node embedding
-        # state.uooo()
         query = fixed.context_node_projected + \
                 self.project_step_context(self._get_parallel_step_context(fixed.node_embeddings, state)) ### this has to be cross checked for the context inputs
 
@@ -482,86 +476,49 @@ class AttentionModel(nn.Module):
         current_node = state.get_current_node()
         batch_size, num_steps = current_node.size()
             # Embedding of previous node + remaining capacity
-        if self.is_vrp:
-            if from_depot:
-                # 1st dimension is node idx, but we do not squeeze it since we want to insert step dimension
-                # i.e. we actually want embeddings[:, 0, :][:, None, :] which is equivalent
-                return torch.cat(
-                    (
-                        embeddings[:, 0:1, :].expand(batch_size, num_steps, embeddings.size(-1)),
-                        # used capacity is 0 after visiting depot
-                        self.problem.VEHICLE_CAPACITY - torch.zeros_like(state.used_capacity[:, :, None])
-                    ),
-                    -1
-                )
-            else:
-                return torch.cat(
-                    (
-                        torch.gather(
-                            embeddings,
-                            1,
-                            current_node.contiguous()
-                                .view(batch_size, num_steps, 1)
-                                .expand(batch_size, num_steps, embeddings.size(-1))
-                        ).view(batch_size, num_steps, embeddings.size(-1)),
-                        self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
-                    ),
-                    -1
-                )
 
-        else:
-            robots_current_destination = state.robots_current_destination.clone()
+        robots_current_destination = state.robots_current_destination.clone()
 
-            return torch.cat(
-                (
-                    state.current_time[:, :, None],
-                    torch.gather(
-                        embeddings,
-                        1,
-                        current_node.contiguous()
-                            .view(batch_size, num_steps, 1)
-                            .expand(batch_size, num_steps, embeddings.size(-1))
-                    ).view(batch_size, num_steps, embeddings.size(-1)),
-                    ## can be modified by adding the difference of current time and the deadline
-                    state.robot_taking_decision_range[:, :, None],
-                    state.robots_capacity[state.ids, state.robot_taking_decision].view(batch_size, 1,-1),
-                    torch.gather(
-                embeddings,
-                1,
-                robots_current_destination.contiguous().view(batch_size,
-                                                                   20,
-                                                                   1).expand(batch_size,
-                                                                             20,
-                                                                             embeddings.size(-1))
-            ).reshape((batch_size,1,-1)),
-                    state.robots_range_remaining.view(batch_size, 1,-1),
-                    state.robots_capacity.view(batch_size, 1,-1)
-                    # state.ro
-                    # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
-                ),
-                -1
-            )
-            # return vec
-            # print('Embeddings: ', embeddings.is_cuda)
-            # print('Current node: ', current_node.is_cuda)
-            # print('State time: ', state.current_time.is_cuda)
-            # print('State robot taking decision: ', state.robot_taking_decision_range.is_cuda)
-            # return torch.cat(
-            #     (
-            #         torch.gather(
-            #             embeddings,
-            #             1,
-            #             current_node.contiguous()
-            #                 .view(batch_size, num_steps, 1)
-            #                 .expand(batch_size, num_steps, embeddings.size(-1))
-            #         ).view(batch_size, num_steps, embeddings.size(-1)),
-            #         state.current_time[:, :, None], ## can be modified by adding the difference of current time and the deadline
-            #         state.robot_taking_decision_range[:, :, None]
-            #         # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
-            #     ),
-            #     -1
-            # )
-### new stuffs
+
+        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_range_remaining[:,:,None], state.coords[state.ids,state.robot_depot_association]),-1)
+        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robot_taking_decision_range),-1) # add depot info here??
+
+
+        robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)
+        decision_robot_state_embedding = self.robot_taking_decision_query(decision_robot_state)
+        return torch.cat((state.current_time[:, :, None], decision_robot_state_embedding[:,None], robots_states_embedding[:,None]),-1)
+
+
+        # return torch.cat(
+        #     (
+        #         state.current_time[:, :, None],
+        #         torch.gather(
+        #             embeddings,
+        #             1,
+        #             current_node.contiguous()
+        #                 .view(batch_size, num_steps, 1)
+        #                 .expand(batch_size, num_steps, embeddings.size(-1))
+        #         ).view(batch_size, num_steps, embeddings.size(-1)),
+        #         ## can be modified by adding the difference of current time and the deadline
+        #         state.robot_taking_decision_range[:, :, None],
+        #         state.robots_capacity[state.ids, state.robot_taking_decision].view(batch_size, 1,-1),
+        #         torch.gather(
+        #     embeddings,
+        #     1,
+        #     robots_current_destination.contiguous().view(batch_size,
+        #                                                        20,
+        #                                                        1).expand(batch_size,
+        #                                                                  20,
+        #                                                                  embeddings.size(-1))
+        # ).reshape((batch_size,1,-1)),
+        #         state.robots_range_remaining.view(batch_size, 1,-1),
+        #         state.robots_capacity.view(batch_size, 1,-1)
+        #         # state.ro
+        #         # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
+        #     ),
+        #     -1
+        # )
+
 
 
 
