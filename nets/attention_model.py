@@ -350,10 +350,10 @@ class AttentionModel(nn.Module):
             current_time = state.current_time
             # print(selected[0].item(), state.robot_taking_decision[0])
             if input['loc'].size()[1] <= state.total_size.item()-1:
-                new_loc = torch.FloatTensor(batch_size, 1, 2, device='cuda:0').uniform_(0, 1)
+                new_loc = torch.FloatTensor(batch_size, 1, 2).uniform_(0, 1).to(input['loc'].device)
 
                 new_deadline = torch.mul(1 - state.current_time,
-                          torch.FloatTensor(batch_size, 1, device='cuda:0').uniform_(0, 1)) + current_time.to('cuda:0')
+                          torch.FloatTensor(batch_size, 1).uniform_(0, 1)).to(input['loc'].device) + current_time
                 input['loc'] = torch.cat((input['loc'], new_loc), -2)
                 input['deadline'] = torch.cat((input['deadline'], new_deadline), -1)
             state = state.update_new(selected, input)
