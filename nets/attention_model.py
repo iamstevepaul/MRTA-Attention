@@ -347,12 +347,13 @@ class AttentionModel(nn.Module):
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
+            current_time = state.current_time
             # print(selected[0].item(), state.robot_taking_decision[0])
             if input['loc'].size()[1] <= state.total_size.item()-1:
-                new_loc = torch.FloatTensor(batch_size, 1, 2).uniform_(0, 1)
+                new_loc = torch.FloatTensor(batch_size, 1, 2, device=input['loc'].device).uniform_(0, 1)
 
                 new_deadline = torch.mul(1 - state.current_time,
-                          torch.FloatTensor(batch_size, 1, device=state.current_time.device).uniform_(0, 1)) + state.current_time
+                          torch.FloatTensor(batch_size, 1, device=input['loc'].device).uniform_(0, 1)) + current_time.to(device=input['loc'].device)
                 input['loc'] = torch.cat((input['loc'], new_loc), -2)
                 input['deadline'] = torch.cat((input['deadline'], new_deadline), -1)
             state = state.update_new(selected, input)
