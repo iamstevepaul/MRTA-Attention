@@ -78,6 +78,7 @@ class AttentionModel(nn.Module):
         self.robots_state_query_embed = nn.Linear(5, embedding_dim)
         self.robot_taking_decision_query = nn.Linear(3, embedding_dim)
 
+
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
 
@@ -137,16 +138,17 @@ class AttentionModel(nn.Module):
         :return:
         """
 
-        if self.checkpoint_encoder and self.training:  # Only checkpoint if we need gradients
-            embeddings, _ = checkpoint(self.embedder, self._init_embed(input))
-        else:
-            import time
-            # start_time = time.time()
-            # embeddings, _ = self.embedder(self._init_embed(input))
-            embeddings, _ = self.embedder(input)
+        # if self.checkpoint_encoder and self.training:  # Only checkpoint if we need gradients
+        #     embeddings, _ = checkpoint(self.embedder, self._init_embed(input))
+        # else:
+        #     # import time
+        #     # start_time = time.time()
+        #     # embeddings, _ = self.embedder(self._init_embed(input))
+        #     embeddings, _ = self.embedder(input)
             # end_time = time.time() - start_time
 
-        _log_p, pi, cost = self._inner(input, embeddings)
+        # _log_p, pi, cost = self._inner(input, embeddings)
+        _log_p, pi, cost = self._inner_new(input, None)
         # cos, mask = self.problem.get_costs(input, pi)
         mask = None
         # Log likelyhood is calculated within the model since returning it per action does not work well with
@@ -305,6 +307,82 @@ class AttentionModel(nn.Module):
 
 
 
+    def get_new_active_tasks(self, fixed, state):
+        return torch.cat((state.active_tasks, torch.tensor(state.active_tasks.size()[1]+1).expand(torch.tensor(state.active_tasks.size()[0],1)),-1))
+
+    # def get_initial_tasks(self, state):
+    #     pass
+
+    def _inner_new(self, input, embeddings):
+
+        outputs = []
+        sequences = []
+
+        # state = self.problem.make_state(input)
+        # # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
+        # fixed = self._precompute(embeddings)
+        #
+        # batch_size = state.ids.size(0)
+
+
+        # Perform decoding steps
+        i = 0
+        # print(state.visited_)
+        # print(state.all_finished().item())
+        # print(state.visited_.all().item())
+        state = self.problem.make_state(input)
+        batch_size = state.ids.size(0)
+        #initial tasks
+        while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
+            embeddings, _ = self.embedder(input)
+            # state = self.problem.make_state(input)
+            fixed = self._precompute(embeddings)
+            # batch_size = state.ids.size(0)
+
+            # Only the required ones goes here, so we should
+            #  We need a variable that track which all tasks are available
+            log_p, mask = self._get_log_p(fixed, state)
+
+            log_p_tot = torch.zeros(batch_size,state.total_size.item()+1)
+
+            # Select the indices of the next nodes in the sequences, result (batch_size) long
+            selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
+            # print(selected[0].item(), state.robot_taking_decision[0])
+            if input['loc'].size()[1] <= state.total_size.item()-1:
+                new_loc = torch.FloatTensor(batch_size, 1, 2).uniform_(0, 1)
+
+                new_deadline = torch.mul(1 - state.current_time,
+                          torch.FloatTensor(batch_size, 1, ).uniform_(0, 1)) + state.current_time
+                input['loc'] = torch.cat((input['loc'], new_loc), -2)
+                input['deadline'] = torch.cat((input['deadline'], new_deadline), -1)
+            state = state.update_new(selected, input)
+            # Now make log_p, selected desired output size by 'unshrinking'
+            if self.shrink_size is not None and state.ids.size(0) < batch_size:
+                log_p_, selected_ = log_p, selected
+                log_p = log_p_.new_zeros(batch_size, *log_p_.size()[1:])
+                selected = selected_.new_zeros(batch_size)
+
+                log_p[state.ids[:, 0]] = log_p_
+                selected[state.ids[:, 0]] = selected_
+            log_p_tot[state.ids, 0:log_p.size()[2]] = log_p
+            # Collect output of step
+            outputs.append(log_p_tot)
+            sequences.append(selected)
+            # print(state.all_finished().item() == 0)
+
+            act = state.active_tasks
+
+
+
+            i += 1
+        # print(state.tasks_done_success, cost)
+        # Collected lists, return Tensor
+        r = 1 - torch.div(state.tasks_done_success, float(state.coords.size()[1]))
+        d = torch.div(state.lengths, float(state.coords.size()[1]) * 1.414)
+        u = (r == 0).double()
+        cost = r - torch.mul(u, torch.exp(-d))
+        return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
+
     def _inner(self, input, embeddings):
 
         outputs = []
@@ -326,17 +404,19 @@ class AttentionModel(nn.Module):
         #initial tasks
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
 
-            if self.shrink_size is not None:
-                unfinished = torch.nonzero(state.get_finished() == 0)
-                if len(unfinished) == 0:
-                    break
-                unfinished = unfinished[:, 0]
-                # Check if we can shrink by at least shrink_size and if this leaves at least 16
-                # (otherwise batch norm will not work well and it is inefficient anyway)
-                if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
-                    # Filter states
-                    state = state[unfinished]
-                    fixed = fixed[unfinished]
+
+
+            # if self.shrink_size is not None:
+            #     unfinished = torch.nonzero(state.get_finished() == 0)
+            #     if len(unfinished) == 0:
+            #         break
+            #     unfinished = unfinished[:, 0]
+            #     # Check if we can shrink by at least shrink_size and if this leaves at least 16
+            #     # (otherwise batch norm will not work well and it is inefficient anyway)
+            #     if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
+            #         # Filter states
+            #         state = state[unfinished]
+            #         fixed = fixed[unfinished]
 
             # Only the required ones goes here, so we should
             #  We need a variable that track which all tasks are available

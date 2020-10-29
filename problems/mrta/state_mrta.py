@@ -71,7 +71,10 @@ class StateMRTA(NamedTuple):
     enable_range_constraint: torch.Tensor
     n_nodes: torch.Tensor
     initial_size: torch.Tensor
+    total_size: torch.Tensor
     n_depot: torch.Tensor
+
+    dynamic_tasks = True
 
 
 
@@ -174,7 +177,8 @@ class StateMRTA(NamedTuple):
             n_depot=n_depot,
             max_speed = max_speed,
             robot_depot_association = torch.randint(0,input['depot'].size()[1], (batch_size, n_agents)),
-            active_tasks = torch.arange(n_depot, initial_size).expand(batch_size, initial_size - n_depot)
+            active_tasks = torch.arange(n_depot, initial_size+n_depot).expand(batch_size, initial_size),
+            total_size = torch.tensor(coords.size()[1] + 50)
         )
 
     def get_final_cost(self):
@@ -184,6 +188,108 @@ class StateMRTA(NamedTuple):
         len = self.lengths + (self.coords[self.ids, 0, :] - self.cur_coord).norm(p=2, dim=-1)
         # torch.mul(len, self.)
         return len
+
+    def update_new(self, selected, input):
+        loc = input['loc']
+        depot = input['depot']
+        max_speed = input['max_speed'][0].item()
+        coords = torch.cat((depot[:, :], loc), -2).to(device=loc.device)
+        distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1).to(device=loc.device)
+        time_matrix = torch.mul(distance_matrix, (1 / max_speed)).to(device=loc.device)
+        deadline = input['deadline']
+
+        # print('************** New decision **************')
+        selected = selected[:, None]  # Add dimension for step
+        prev_a = selected
+
+        previous_time = self.current_time
+
+        current_time = self.next_decision_time
+
+
+        #update mileage
+        robots_range_remaining = self.robots_range_remaining
+        robot_taking_decision = self.robot_taking_decision
+
+        # print('Current time: ', current_time[0].item())
+        # print("Agent taking decision: ", self.robot_taking_decision[0].item())
+        # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
+
+        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        # print('Current coordiantes: ',  cur_coords)
+        # print('Selected node: ', selected)
+        time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
+        # print('Time for journey: ', time)
+        self.robots_next_decision_time[self.ids, self.robot_taking_decision] += time
+        # print('Robots next decision time: ', self.robots_next_decision_time)
+        self.robots_distance_travelled[self.ids, self.robot_taking_decision] += self.distance_matrix[
+            self.ids, self.robots_current_destination[self.ids, robot_taking_decision], selected]
+
+        zero_indices = torch.nonzero(selected[:,0] ==0)
+        if zero_indices.size()[0] > 0:
+            self.robots_capacity[zero_indices[:,0], self.robot_taking_decision[zero_indices[:,0]].view(-1)]= self.max_capacity
+            robots_range_remaining[zero_indices[:, 0], robot_taking_decision[zero_indices[:, 0]].view(-1)] = self.max_range
+            # robots_range_remaining[zero_indices[:, 0], robot_taking_decision[zero_indices[:, 0]].view(-1)]
+
+        non_zero_indices = torch.nonzero(selected)
+        if non_zero_indices.size()[0] > 0:
+            deadlines = self.deadline[self.ids.view(-1), selected.view(-1) - 1]
+            dest_time = self.robots_next_decision_time[self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)]
+            feas_ids = (deadlines > dest_time).nonzero()
+            combined = torch.cat((non_zero_indices[:,0], feas_ids[:,0]))
+            uniques, counts = combined.unique(return_counts=True)
+            # difference = uniques[counts == 1]
+            intersection = uniques[counts > 1]
+            distance_new = self.distance_matrix[non_zero_indices[:, 0], self.robots_current_destination[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)].view(-1), selected[non_zero_indices[:, 0]].view(-1)]
+            robots_range_remaining[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)] -= distance_new
+            if intersection.size()[0] > 0:
+                # self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1*int(self.enable_capacity_constraint) # this has to be uncommented for capacity constraints
+                self.tasks_done_success[intersection] +=1
+            self.tasks_visited[non_zero_indices[:,0]] += 1
+
+        self.robots_start_point[self.ids, self.robot_taking_decision] = self.robots_current_destination[
+            self.ids, self.robot_taking_decision]
+        self.robots_current_destination[self.ids, self.robot_taking_decision] = selected
+
+        sorted_time, indices = torch.sort(self.robots_next_decision_time)
+        robot_taking_decision_range = self.robot_taking_decision_range
+
+        robot_taking_decision_range = robots_range_remaining[self.ids, indices[self.ids, 0]]
+
+        if self.visited_.dtype == torch.uint8:
+            # Note: here we do not subtract one as we have to scatter so the first column allows scattering depot
+            # Add one dimension since we write a single value
+            visited_ = self.visited_.scatter(-1, prev_a[:, :, None], 1)
+        else:
+            # This works, will not set anything if prev_a -1 == -1 (depot)
+            visited_ = mask_long_scatter(self.visited_, prev_a - 1) ## this part is never executed, can be taken off
+
+        if visited_.size()[2] <= self.total_size.item():
+            visited_ = torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1),dtype=torch.uint8)),-1) ## increase the size of visited
+
+        new_cur_coord = self.coords[self.ids, selected]
+        # torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1))),-1)
+
+        lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
+        visited_[:,:,0] = 0
+
+
+        # print('visited: ', visited_[0])
+        # print('***************** End of decision making process*******')
+        # if end
+        return self._replace(
+            coords=coords,
+            distance_matrix=distance_matrix,
+            time_matrix=time_matrix,
+            deadline=deadline,
+            prev_a=prev_a, previous_decision_time = previous_time, current_time = current_time,
+            robots_range_remaining = robots_range_remaining, robot_taking_decision = indices[self.ids,0],
+            next_decision_time = sorted_time[self.ids,0],
+            robot_taking_decision_range = robot_taking_decision_range,
+            visited_=visited_,
+            lengths=lengths, cur_coord=new_cur_coord,
+            i=self.i + 1
+        )
 
     def update(self, selected):
         # print('************** New decision **************')
@@ -250,9 +356,13 @@ class StateMRTA(NamedTuple):
             visited_ = self.visited_.scatter(-1, prev_a[:, :, None], 1)
         else:
             # This works, will not set anything if prev_a -1 == -1 (depot)
-            visited_ = mask_long_scatter(self.visited_, prev_a - 1)
+            visited_ = mask_long_scatter(self.visited_, prev_a - 1) ## this part is never executed, can be taken off
+
+        # if self.dynamic_tasks:
+        #     visited_ = torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1),dtype=torch.uint8)),-1)
 
         new_cur_coord = self.coords[self.ids, selected]
+        # torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1))),-1)
 
         lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
         visited_[:,:,0] = 0
@@ -322,7 +432,7 @@ class StateMRTA(NamedTuple):
                 # nodes = torch.arange(1, self.n_nodes+1)
                 d1 = self.distance_matrix[intersection, robot_dest[intersection].view(-1)]
                 d2 = self.distance_matrix[intersection, 0]
-                avail_range_expand = avail_range.T.expand(self.n_nodes + 1, avail_range.size()[0]).T
+                avail_range_expand = avail_range.T.expand(d1.size()[1], avail_range.size()[0]).T
                 set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1 + d2)
                 full_mask[intersection, :, 1:] = set_true[:, None, 1:]
         return full_mask
