@@ -265,7 +265,7 @@ class StateMRTA(NamedTuple):
             visited_ = mask_long_scatter(self.visited_, prev_a - 1) ## this part is never executed, can be taken off
 
         if visited_.size()[2] <= self.total_size.item():
-            visited_ = torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1),dtype=torch.uint8)),-1) ## increase the size of visited
+            visited_ = torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1),dtype=torch.uint8).to('cuda:0')),-1) ## increase the size of visited
 
         new_cur_coord = self.coords[self.ids, selected]
         # torch.cat((visited_, torch.zeros((robot_taking_decision.size()[0],1,1))),-1)
