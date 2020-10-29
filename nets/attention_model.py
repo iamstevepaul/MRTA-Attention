@@ -343,7 +343,7 @@ class AttentionModel(nn.Module):
             #  We need a variable that track which all tasks are available
             log_p, mask = self._get_log_p(fixed, state)
 
-            log_p_tot = torch.zeros(batch_size,state.total_size.item()+1)
+            log_p_tot = torch.zeros(batch_size,state.total_size.item()+1).to(state.ids.device)
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
