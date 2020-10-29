@@ -352,7 +352,7 @@ class AttentionModel(nn.Module):
                 new_loc = torch.FloatTensor(batch_size, 1, 2).uniform_(0, 1)
 
                 new_deadline = torch.mul(1 - state.current_time,
-                          torch.FloatTensor(batch_size, 1, ).uniform_(0, 1)) + state.current_time
+                          torch.FloatTensor(batch_size, 1, device=state.current_time.device).uniform_(0, 1)) + state.current_time
                 input['loc'] = torch.cat((input['loc'], new_loc), -2)
                 input['deadline'] = torch.cat((input['deadline'], new_deadline), -1)
             state = state.update_new(selected, input)
