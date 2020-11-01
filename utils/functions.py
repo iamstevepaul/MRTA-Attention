@@ -177,7 +177,7 @@ def sample_many(inner_func, get_cost_func, input, batch_rep=1, iter_rep=1):
     :param input: (batch_size, graph_size, node_dim) input node features
     :return:
     """
-    input = do_batch_rep(input, batch_rep)
+    # input = do_batch_rep(input, batch_rep)
 
     costs = []
     pis = []
@@ -185,8 +185,8 @@ def sample_many(inner_func, get_cost_func, input, batch_rep=1, iter_rep=1):
     for i in range(iter_rep):
         _log_p, pi, cost, tasks_done = inner_func(input)
         # pi.view(-1, batch_rep, pi.size(-1))
-        cos, mask = get_cost_func(input, pi)
-
+        # cos, mask = get_cost_func(input, pi)
+        mask = None
         # tasks_done.append(tasks_success)
         costs.append(cost.view(batch_rep, -1).t())
         pis.append(pi.view(batch_rep, -1, pi.size(-1)).transpose(0, 1))

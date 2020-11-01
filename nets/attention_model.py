@@ -237,44 +237,53 @@ class AttentionModel(nn.Module):
         outputs = []
         sequences = []
 
-        state = self.problem.make_state(input)
-        # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
-        fixed = self._precompute(embeddings)
-
-        batch_size = state.ids.size(0)
+        # state = self.problem.make_state(input)
+        # # Compute keys, values for the glimpse and keys for the logits once as they can be reused in every step
+        # fixed = self._precompute(embeddings)
+        #
+        # batch_size = state.ids.size(0)
 
         # Perform decoding steps
         i = 0
         # print(state.visited_)
         # print(state.all_finished().item())
         # print(state.visited_.all().item())
+        state = self.problem.make_state(input)
+        batch_size = state.ids.size(0)
         time_sl = []
+        # initial tasks
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
             start_time = time.time()
 
-            if self.shrink_size is not None:
-                unfinished = torch.nonzero(state.get_finished() == 0)
-                if len(unfinished) == 0:
-                    break
-                unfinished = unfinished[:, 0]
-                # Check if we can shrink by at least shrink_size and if this leaves at least 16
-                # (otherwise batch norm will not work well and it is inefficient anyway)
-                if 16 <= len(unfinished) <= state.ids.size(0) - self.shrink_size:
-                    # Filter states
-                    state = state[unfinished]
-                    fixed = fixed[unfinished]
+            embeddings, _ = self.embedder(input)
+            # state = self.problem.make_state(input)
+            fixed = self._precompute(embeddings)
+            # batch_size = state.ids.size(0)
 
+            # Only the required ones goes here, so we should
+            #  We need a variable that track which all tasks are available
             log_p, mask = self._get_log_p(fixed, state)
+
+            log_p_tot = torch.zeros(batch_size, state.total_size.item() + 1).to(state.ids.device)
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
+            current_time = state.current_time
             # print(selected[0].item(), state.robot_taking_decision[0])
+            if input['loc'].size()[1] <= state.total_size.item() - 1:
+                new_loc = torch.FloatTensor(batch_size, 1, 2).uniform_(0, 1).to(input['loc'].device)
+                a1 = (1 - state.current_time)
+                a2 = torch.FloatTensor(batch_size, 1).uniform_(0, 1)
+                # print("a1:", a1.device)
+                new_deadline = torch.mul(a1.to(input['deadline'].device),
+                                         a2.to(input['deadline'].device)).to(
+                    input['deadline'].device) + current_time.to(input['deadline'].device)
+                input['loc'] = torch.cat((input['loc'], new_loc), -2)
+                input['deadline'] = torch.cat((input['deadline'], new_deadline), -1)
             end_time1 = time.time() - start_time
-            state = state.update(selected)
+            state = state.update_new(selected, input)
             start_time2 = time.time()
-            # cost = torch.div(state.lengths, state.tasks_done_success)
-            # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
-            #     torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
+
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -283,35 +292,26 @@ class AttentionModel(nn.Module):
 
                 log_p[state.ids[:, 0]] = log_p_
                 selected[state.ids[:, 0]] = selected_
-
+            log_p_tot[state.ids, 0:log_p.size()[2]] = log_p
             # Collect output of step
-            outputs.append(log_p[:, 0, :])
+            outputs.append(log_p_tot)
             sequences.append(selected)
             # print(state.all_finished().item() == 0)
 
+            act = state.active_tasks
+
             i += 1
             end_time2 = time.time() - start_time2
-            time_sl.append(end_time1+end_time2)
+            time_sl.append(end_time1 + end_time2)
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
-        u = (r == 0).double()
-        cost = r - torch.mul(u, torch.exp(-d))
-
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        r = 1 - torch.div(state.tasks_done_success, float(state.coords.size()[1]))
+        d = torch.div(state.lengths, float(state.coords.size()[1]) * 1.414)
         u = (r == 0).double()
         cost = r - torch.mul(u, torch.exp(-d))
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost, state.tasks_done_success.tolist()
 
 
-
-    def get_new_active_tasks(self, fixed, state):
-        return torch.cat((state.active_tasks, torch.tensor(state.active_tasks.size()[1]+1).expand(torch.tensor(state.active_tasks.size()[0],1)),-1))
-
-    # def get_initial_tasks(self, state):
-    #     pass
 
     def _inner_new(self, input, embeddings):
 
@@ -466,8 +466,8 @@ class AttentionModel(nn.Module):
         return sample_many(
             lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
-            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
+            (input, None),  # Pack input with embeddings (additional input) - for CCN encoding
+            # (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 
