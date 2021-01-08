@@ -383,8 +383,8 @@ class AttentionModel(nn.Module):
         return sample_many(
             lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
-            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
+            (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
+            # (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 

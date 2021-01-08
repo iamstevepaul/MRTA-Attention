@@ -25,7 +25,7 @@ def generate_vrp_data(dataset_size, vrp_size):
 def generate_mrta_data(dataset_size, mrta_size):
 
     return list(zip(
-        np.random.uniform(size=(dataset_size, 2)).tolist(),  # Depot location
+        np.random.uniform(size=(dataset_size, 1, 2)).tolist(),  # Depot location
         np.random.uniform(size=(dataset_size, mrta_size, 2)).tolist(),  # Node locations
         np.random.uniform(0.1, 1,  size=(dataset_size, mrta_size)).tolist() ,  #
     ))
@@ -45,7 +45,7 @@ if __name__ == "__main__":
                         help="Distributions to generate for problem, default 'all'.")
 
     parser.add_argument("--dataset_size", type=int, default=100, help="Size of the dataset")
-    parser.add_argument('--graph_sizes', type=int, nargs='+', default=[200],
+    parser.add_argument('--graph_sizes', type=int, nargs='+', default=[50],
                         help="Sizes of problem instances (default 20, 50, 100)")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument('--seed', type=int, default=1234, help="Random seed")
@@ -77,16 +77,16 @@ if __name__ == "__main__":
                 datadir = os.path.join(opts.data_dir, problem)
                 os.makedirs(datadir, exist_ok=True)
 
-                if opts.filename is None:
-                    filename = os.path.join(datadir, "{}{}{}_{}_seed{}.pkl".format(
-                        problem,
-                        "_{}".format(distribution) if distribution is not None else "",
-                        graph_size, opts.name, opts.seed))
-                else:
-                    filename = check_extension(opts.filename)
-
-                assert opts.f or not os.path.isfile(check_extension(filename)), \
-                    "File already exists! Try running with -f option to overwrite."
+                # if opts.filename is None:
+                #     filename = os.path.join(datadir, "{}{}{}_{}_seed{}.pkl".format(
+                #         problem,
+                #         "_{}".format(distribution) if distribution is not None else "",
+                #         graph_size, opts.name, opts.seed))
+                # else:
+                #     filename = check_extension(opts.filename)
+                #
+                # assert opts.f or not os.path.isfile(check_extension(filename)), \
+                #     "File already exists! Try running with -f option to overwrite."
 
                 np.random.seed(opts.seed)
                 if problem == 'mrta':
@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
                 print(dataset[0])
 
-                save_dataset(dataset, filename)
+                save_dataset(dataset, datadir+"/50_nodes_mrta.pkl")

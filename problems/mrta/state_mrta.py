@@ -111,7 +111,7 @@ class StateMRTA(NamedTuple):
         coords = torch.cat((depot[:, :], loc), -2).to(device=loc.device)
         distance_matrix = (coords[:, :, None, :] - coords[:, None, :, :]).norm(p=2, dim=-1).to(device=loc.device)
         time_matrix = torch.mul(distance_matrix, (1/max_speed)).to(device=loc.device)
-        deadline = input['deadline']
+        deadline = input['deadline'] + torch.tensor(np.random.normal(loc=0, scale=0, size=input['deadline'].size()))
         n_agents = input['n_agents'][0].item()
         max_range = input['max_range'][0].item()
         max_capacity = input['max_capacity'][0].item()
