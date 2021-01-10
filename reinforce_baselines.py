@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from scipy.stats import ttest_rel
 import copy
+import pickle
 from train import rollout, get_inner_model
 
 class Baseline(object):
@@ -208,6 +209,10 @@ class RolloutBaseline(Baseline):
 
         print("Epoch {} candidate mean {}, baseline epoch {} mean {}, difference {}".format(
             epoch, candidate_mean, self.epoch, self.mean, candidate_mean - self.mean))
+        dt = pickle.load(open('epoch_vals.pkl', 'rb'))
+        dt.append(self.mean)
+        with open('epoch_vals.pkl', 'wb') as handle:
+            pickle.dump(dt, handle, protocol=pickle.HIGHEST_PROTOCOL)
         if candidate_mean - self.mean < 0:
             # Calc p value
             t, p = ttest_rel(candidate_vals, self.bl_vals)

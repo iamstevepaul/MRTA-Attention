@@ -6,6 +6,7 @@ import pprint as pp
 import time
 import torch
 import torch.optim as optim
+import pickle
 # from tensorboard_logger import Logger as TbLogger
 
 from options import get_options
@@ -121,6 +122,8 @@ def run(opts):
         deadline_max=opts.deadline_max,
         distribution=opts.data_distribution)
 
+    epoch_times= []
+
     if opts.resume:
         epoch_resume = int(os.path.splitext(os.path.split(opts.resume)[-1])[0].split("-")[1])
 
@@ -136,6 +139,8 @@ def run(opts):
     if opts.eval_only:
         validate(model, val_dataset, opts)
     else:
+        with open('epoch_vals.pkl', 'wb') as handle:
+            pickle.dump([], handle, protocol=pickle.HIGHEST_PROTOCOL)
         for epoch in range(opts.epoch_start, opts.epoch_start + opts.n_epochs):
             start_time = time.time()
             train_epoch(
@@ -150,7 +155,10 @@ def run(opts):
                 opts
             )
             total_time = (time.time() - start_time)/60.0
+            epoch_times.append(total_time)
             print('Epoch: ', epoch, ' time: ', total_time, ' minutes.')
+        with open('epoch_times.pkl', 'wb') as handle:
+            pickle.dump(epoch_times, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == "__main__":
