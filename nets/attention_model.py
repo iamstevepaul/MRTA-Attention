@@ -334,6 +334,7 @@ class AttentionModel(nn.Module):
         batch_size = state.ids.size(0)
         #initial tasks
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
+            input['visited'] = state.visited
             embeddings, _ = self.embedder(input)
             # state = self.problem.make_state(input)
             fixed = self._precompute(embeddings)
