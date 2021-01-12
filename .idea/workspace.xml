@@ -3,31 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nets/attention_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/attention_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T182531/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T183033/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T183113/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T183150/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T184248/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T185530/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T185708/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T190257/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T190727/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191034/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191203/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/args.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-0.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-1.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-2.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-3.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-4.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-5.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-6.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-7.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-8.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/mrta_10/run_20200712T191753/epoch-9.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_vrp.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,45 +178,50 @@
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state x="634" y="314" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1604200300379" />
-    <state x="891" y="48" key="#xdebugger.evaluate" timestamp="1610416618866">
+    <state x="891" y="48" key="#xdebugger.evaluate" timestamp="1610425526762">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="891" y="48" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1610416618866" />
-    <state width="1771" height="268" key="GridCell.Tab.0.bottom" timestamp="1610417858458">
+    <state x="891" y="48" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1610425526762" />
+    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog" timestamp="1610426264006">
+      <screen x="0" y="25" width="1792" height="983" />
+    </state>
+    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1610425161952" />
+    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.25.1792.983@0.25.1792.983" timestamp="1610426264006" />
+    <state width="1771" height="268" key="GridCell.Tab.0.bottom" timestamp="1610425477912">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858458" />
-    <state width="1771" height="268" key="GridCell.Tab.0.center" timestamp="1610417858458">
+    <state width="1771" height="268" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1610425477912" />
+    <state width="1771" height="268" key="GridCell.Tab.0.center" timestamp="1610425477911">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858458" />
-    <state width="1771" height="268" key="GridCell.Tab.0.left" timestamp="1610417858457">
+    <state width="1771" height="268" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1610425477911" />
+    <state width="1771" height="268" key="GridCell.Tab.0.left" timestamp="1610425477911">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858457" />
-    <state width="1771" height="268" key="GridCell.Tab.0.right" timestamp="1610417858458">
+    <state width="1771" height="268" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1610425477911" />
+    <state width="1771" height="268" key="GridCell.Tab.0.right" timestamp="1610425477912">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858458" />
-    <state width="1771" height="268" key="GridCell.Tab.1.bottom" timestamp="1610417858459">
+    <state width="1771" height="268" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1610425477912" />
+    <state width="1771" height="268" key="GridCell.Tab.1.bottom" timestamp="1610425482470">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858459" />
+    <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
     <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.23.1792.990@0.23.1792.990" timestamp="1604212470970" />
-    <state width="1771" height="268" key="GridCell.Tab.1.center" timestamp="1610417858459">
+    <state width="1771" height="268" key="GridCell.Tab.1.center" timestamp="1610425482470">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858459" />
+    <state width="1771" height="268" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
     <state width="1771" height="268" key="GridCell.Tab.1.center/0.23.1792.990@0.23.1792.990" timestamp="1604212470969" />
-    <state width="1771" height="268" key="GridCell.Tab.1.left" timestamp="1610417858459">
+    <state width="1771" height="268" key="GridCell.Tab.1.left" timestamp="1610425482469">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858459" />
+    <state width="1771" height="268" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482469" />
     <state width="1771" height="268" key="GridCell.Tab.1.left/0.23.1792.990@0.23.1792.990" timestamp="1604212470969" />
-    <state width="1771" height="268" key="GridCell.Tab.1.right" timestamp="1610417858459">
+    <state width="1771" height="268" key="GridCell.Tab.1.right" timestamp="1610425482470">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="268" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1610417858459" />
+    <state width="1771" height="268" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
     <state width="1771" height="268" key="GridCell.Tab.1.right/0.23.1792.990@0.23.1792.990" timestamp="1604212470970" />
     <state width="896" height="560" key="XDebugger.FullValuePopup" timestamp="1610416598264">
       <screen x="0" y="0" width="1792" height="1120" />
@@ -273,6 +254,11 @@
           <url>file://$PROJECT_DIR$/eval.py</url>
           <line>160</line>
           <option name="timeStamp" value="527" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/problems/mrta/state_mrta.py</url>
+          <line>113</line>
+          <option name="timeStamp" value="563" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
