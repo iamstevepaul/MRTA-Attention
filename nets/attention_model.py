@@ -88,8 +88,8 @@ class AttentionModel(nn.Module):
         node_dim = 3  # x, y, demand / prize
 
         if self.is_mrta:
-            n_robot = 20
-            step_context_dim = embedding_dim + 1 + 1 + 1 + n_robot*(embedding_dim + 1 + 1)#embedding_dim + 2
+            # n_robot = 20
+            # step_context_dim = embedding_dim + 1 + 1 + 1 + n_robot*(embedding_dim + 1 + 1)#embedding_dim + 2
 
 
 
@@ -487,38 +487,6 @@ class AttentionModel(nn.Module):
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)
         decision_robot_state_embedding = self.robot_taking_decision_query(decision_robot_state)
         return torch.cat((state.current_time[:, :, None], decision_robot_state_embedding[:,None], robots_states_embedding[:,None]),-1)
-
-
-        # return torch.cat(
-        #     (
-        #         state.current_time[:, :, None],
-        #         torch.gather(
-        #             embeddings,
-        #             1,
-        #             current_node.contiguous()
-        #                 .view(batch_size, num_steps, 1)
-        #                 .expand(batch_size, num_steps, embeddings.size(-1))
-        #         ).view(batch_size, num_steps, embeddings.size(-1)),
-        #         ## can be modified by adding the difference of current time and the deadline
-        #         state.robot_taking_decision_range[:, :, None],
-        #         state.robots_capacity[state.ids, state.robot_taking_decision].view(batch_size, 1,-1),
-        #         torch.gather(
-        #     embeddings,
-        #     1,
-        #     robots_current_destination.contiguous().view(batch_size,
-        #                                                        20,
-        #                                                        1).expand(batch_size,
-        #                                                                  20,
-        #                                                                  embeddings.size(-1))
-        # ).reshape((batch_size,1,-1)),
-        #         state.robots_range_remaining.view(batch_size, 1,-1),
-        #         state.robots_capacity.view(batch_size, 1,-1)
-        #         # state.ro
-        #         # self.problem.VEHICLE_CAPACITY - state.used_capacity[:, :, None]
-        #     ),
-        #     -1
-        # )
-
 
 
 
