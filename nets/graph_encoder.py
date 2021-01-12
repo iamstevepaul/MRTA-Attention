@@ -238,7 +238,7 @@ class CCN3(nn.Module):
 
         F_embed_final = self.final_embedding(concat).sum(dim=2)
         init_depot_embed = self.init_embed_depot(X['depot'])
-        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        h = activ(torch.cat((init_depot_embed, F_embed_final), -2))
         return (
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
