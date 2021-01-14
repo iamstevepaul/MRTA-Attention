@@ -85,7 +85,7 @@ class AttentionModel(nn.Module):
         step_context_dim = embedding_dim + 1
 
 
-        node_dim = 3  # x, y, demand / prize
+        node_dim = 2  # x, y, demand / prize
 
         if self.is_mrta:
             # n_robot = 20
@@ -111,7 +111,7 @@ class AttentionModel(nn.Module):
 
         self.embedder = CCN3(
             embed_dim=embedding_dim,
-            node_dim=3
+            node_dim=2
         )
 
 
@@ -344,7 +344,7 @@ class AttentionModel(nn.Module):
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
-            # print(selected[0].item(), state.robot_taking_decision[0])
+            # print(selected)
 
             state = state.update(selected)
 

@@ -14,21 +14,23 @@ def get_options(args=None):
     parser.add_argument('--initial_size', type=int, default=150, help="The size of the problem graph when the simulation starts")
     parser.add_argument('--batch_size', type=int, default=100, help="Number of instances per batch during training") # changed
     parser.add_argument('--epoch_size', type=int, default=10000, help="Number of instances per epoch during training") # changed
-    parser.add_argument('--n_agents', type=int, default=10, help="Number of robots")
+    parser.add_argument('--n_agents', type=int, default=1, help="Number of robots")
     parser.add_argument('--n_depot', type=int, default=1, help="Number of depot")
     parser.add_argument('--agent_max_range', type=int, default=4, help="Max range for the robot")
     parser.add_argument('--agent_max_capacity', type=int, default=10, help="Max capacity for the robot")
     parser.add_argument('--agent_max_speed', type=int, default=10, help="Max speed for the robot")
     parser.add_argument('--enable_capacity_constraint', type=bool, default=False, help="Set it to true to enable capacity constraint")
     parser.add_argument('--enable_range_constraint', type=bool, default=True, help="Set it true to enable range constraint")
-    parser.add_argument('--deadline_min', type=int, default=.1,
+    parser.add_argument('--deadline_min', type=int, default=5,
                         help="Min value for deadline")
-    parser.add_argument('--deadline_max', type=int, default=1,
+    parser.add_argument('--deadline_max', type=int, default=10,
                         help="Max value for deadline")
 
     parser.add_argument('--val_size', type=int, default=1000, # changed
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--val_dataset', type=str, default=None, help='Dataset file to use for validation')
+    parser.add_argument('--eval_batch_size', type=int, default=100,  ## changed
+                        help="Batch size to use during (baseline) evaluation")
 
     # Model
     parser.add_argument('--model', default='attention', help="Model, 'attention' (default) or 'pointer'")
@@ -60,8 +62,7 @@ def get_options(args=None):
     parser.add_argument('--bl_warmup_epochs', type=int, default=None,
                         help='Number of epochs to warmup the baseline, default None means 1 for rollout (exponential '
                              'used for warmup phase), 0 otherwise. Can only be used with rollout baseline.')
-    parser.add_argument('--eval_batch_size', type=int, default=100, ## changed
-                        help="Batch size to use during (baseline) evaluation")
+
     parser.add_argument('--checkpoint_encoder', action='store_true',
                         help='Set to decrease memory usage by checkpointing encoder')
     parser.add_argument('--shrink_size', type=int, default=None,
