@@ -10,7 +10,7 @@ def get_options(args=None):
 
     # Data
     parser.add_argument('--problem', default='mrta', help="The problem to solve, default 'tsp'")
-    parser.add_argument('--graph_size', type=int, default=200, help="The size of the problem graph")
+    parser.add_argument('--graph_size', type=int, default=100, help="The size of the problem graph")
     parser.add_argument('--initial_size', type=int, default=150, help="The size of the problem graph when the simulation starts")
     parser.add_argument('--batch_size', type=int, default=100, help="Number of instances per batch during training") # changed
     parser.add_argument('--epoch_size', type=int, default=10000, help="Number of instances per epoch during training") # changed

@@ -220,6 +220,8 @@ class CCN3(nn.Module):
         self.neighbour_encode = nn.Linear(node_dim, embed_dim)
         self.init_embed_depot = nn.Linear(2, embed_dim)
         self.final_embedding = nn.Linear(embed_dim, embed_dim)
+        self.test_layer_1 = nn.Sequential(nn.Linear(embed_dim, embed_dim), nn.LeakyReLU())
+        self.test_layer_2 = nn.Sequential(nn.Linear(embed_dim, embed_dim), nn.LeakyReLU())
 
     def forward(self, X, mask=None):
         x = X['loc']
@@ -230,15 +232,17 @@ class CCN3(nn.Module):
         # F0_embedding.reshape([1])
 
         dist_mat = (x2[:, None] - x2[:, :, None]).norm(dim=-1, p=2)  ## device to cuda to be added
-        neighbors = dist_mat.sort().indices[:, :, :6]  # for 6 neighbours
+        neighbors = dist_mat.sort().indices[:, :, :20]  # for 6 neighbours
         neighbour = x[:, neighbors][0]
         neighbour_delta = neighbour - x[:, :, None, :]
         neighbour_delta_embedding = self.neighbour_encode(neighbour_delta)
         concat = torch.cat((F0_embedding_3d[:, :, None, :], neighbour_delta_embedding), 2)
 
-        F_embed_final = self.final_embedding(concat).sum(dim=2)
+        F_embed_final = self.test_layer_1(concat).sum(dim=2)
+        h2_neighbor = F_embed_final[:, neighbors][0]
+        F_embed_final_2 = self.test_layer_2(h2_neighbor).sum(dim=2)
         init_depot_embed = self.init_embed_depot(X['depot'])
-        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        h = torch.cat((init_depot_embed, F_embed_final_2), -2)
         return (
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
