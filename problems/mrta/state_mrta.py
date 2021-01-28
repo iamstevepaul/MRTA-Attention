@@ -229,7 +229,7 @@ class StateMRTA(NamedTuple):
             # difference = uniques[counts == 1]
             intersection = uniques[counts > 1]
             distance_new = self.distance_matrix[non_zero_indices[:, 0], self.robots_current_destination[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)].view(-1), selected[non_zero_indices[:, 0]].view(-1)]
-            robots_range_remaining[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)] -= distance_new
+            # robots_range_remaining[non_zero_indices[:, 0], robot_taking_decision[non_zero_indices[:, 0]].view(-1)] -= distance_new
             if intersection.size()[0] > 0:
                 # self.robots_capacity[intersection, self.robot_taking_decision[intersection].view(-1)] -= 1*int(self.enable_capacity_constraint) # this has to be uncommented for capacity constraints
                 self.tasks_done_success[intersection] +=1
@@ -301,30 +301,32 @@ class StateMRTA(NamedTuple):
         # Cannot visit the depot if just visited and still unserved nodes
         mask_depot = (self.robots_current_destination[self.ids, robot_taking_decision] == 0) & (
                     (mask_loc == 0).int().sum(-1) > 0)
+
+        mask_depot = (self.robots_current_destination[self.ids, robot_taking_decision] == 0) | (self.robots_current_destination[self.ids, robot_taking_decision] != 0)
         full_mask = torch.cat((mask_depot[:, :, None], mask_loc), -1)
-        robot_taking_decision = self.robot_taking_decision
-        capacity = self.robots_capacity[self.ids, robot_taking_decision]
-        zero_capacity_ind = (capacity[:, 0] < 1).nonzero()
-
-        if zero_capacity_ind.size()[0] > 0:
-            full_mask[zero_capacity_ind[:, 0], :, 1:] = True
-
-        non_zero_capacity_ind = (capacity[:, 0] > 0).nonzero()
-        if non_zero_capacity_ind.size()[0] > 0:
-            robot_dest = self.robots_current_destination[self.ids[:, 0], robot_taking_decision[self.ids[:, 0]].view(-1)]
-            non_zero_robot_dest = (robot_dest != 0).nonzero()
-            combined = torch.cat((non_zero_capacity_ind[:, 0], non_zero_robot_dest[:, 0]))
-            uniques, counts = combined.unique(return_counts=True)
-            intersection = uniques[counts > 1]
-            if intersection.size()[0] > 0:
-                avail_range = self.robots_range_remaining[
-                    intersection, robot_taking_decision[intersection].view(-1)]
-                # nodes = torch.arange(1, self.n_nodes+1)
-                d1 = self.distance_matrix[intersection, robot_dest[intersection].view(-1)]
-                d2 = self.distance_matrix[intersection, 0]
-                avail_range_expand = avail_range.T.expand(self.n_nodes + 1, avail_range.size()[0]).T
-                set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1 + d2)
-                full_mask[intersection, :, 1:] = set_true[:, None, 1:]
+        # robot_taking_decision = self.robot_taking_decision
+        # capacity = self.robots_capacity[self.ids, robot_taking_decision]
+        # zero_capacity_ind = (capacity[:, 0] < 1).nonzero()
+        #
+        # if zero_capacity_ind.size()[0] > 0:
+        #     full_mask[zero_capacity_ind[:, 0], :, 1:] = True
+        #
+        # non_zero_capacity_ind = (capacity[:, 0] > 0).nonzero()
+        # if non_zero_capacity_ind.size()[0] > 0:
+        #     robot_dest = self.robots_current_destination[self.ids[:, 0], robot_taking_decision[self.ids[:, 0]].view(-1)]
+        #     non_zero_robot_dest = (robot_dest != 0).nonzero()
+        #     combined = torch.cat((non_zero_capacity_ind[:, 0], non_zero_robot_dest[:, 0]))
+        #     uniques, counts = combined.unique(return_counts=True)
+        #     intersection = uniques[counts > 1]
+        #     if intersection.size()[0] > 0:
+        #         avail_range = self.robots_range_remaining[
+        #             intersection, robot_taking_decision[intersection].view(-1)]
+        #         # nodes = torch.arange(1, self.n_nodes+1)
+        #         d1 = self.distance_matrix[intersection, robot_dest[intersection].view(-1)]
+        #         d2 = self.distance_matrix[intersection, 0]
+        #         avail_range_expand = avail_range.T.expand(self.n_nodes + 1, avail_range.size()[0]).T
+        #         set_true = full_mask[intersection].squeeze(1) | (avail_range_expand < d1 + d2)
+        #         full_mask[intersection, :, 1:] = set_true[:, None, 1:]
         return full_mask
 
     def construct_solutions(self, actions):

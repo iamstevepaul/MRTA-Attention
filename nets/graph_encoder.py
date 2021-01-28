@@ -210,7 +210,7 @@ class CCN3(nn.Module):
 
     def __init__(
             self,
-            node_dim = 3,
+            node_dim = 2,
             embed_dim = 128,
             n_layers = 2,
     ):
@@ -222,7 +222,7 @@ class CCN3(nn.Module):
         self.final_embedding = nn.Linear(embed_dim, embed_dim)
 
     def forward(self, X, mask=None):
-        x = torch.cat((X['loc'], X['deadline'][:, :, None]), 2)
+        x = X['loc']
         x2 = x[:, :, 0:2]
         activ = nn.LeakyReLU()
         # F0_embedding_2d = self.init_embed_2d(x2)

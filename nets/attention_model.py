@@ -75,8 +75,8 @@ class AttentionModel(nn.Module):
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
         torch.autograd.set_detect_anomaly(True)
-        self.robots_state_query_embed = nn.Linear(5, embedding_dim)
-        self.robot_taking_decision_query = nn.Linear(3, embedding_dim)
+        self.robots_state_query_embed = nn.Linear(4, embedding_dim)
+        self.robot_taking_decision_query = nn.Linear(2, embedding_dim)
 
         # Problem specific context parameters (placeholder and step context dimension)
             # Embedding of last node + remaining_capacity / remaining length / remaining prize to collect
@@ -85,7 +85,7 @@ class AttentionModel(nn.Module):
         step_context_dim = embedding_dim + 1
 
 
-        node_dim = 3  # x, y, demand / prize
+        node_dim = 2  # x, y, demand / prize
 
         if self.is_mrta:
             # n_robot = 20
@@ -111,7 +111,7 @@ class AttentionModel(nn.Module):
 
         self.embedder = CCN3(
             embed_dim=embedding_dim,
-            node_dim=3
+            node_dim=2
         )
 
 
@@ -344,7 +344,8 @@ class AttentionModel(nn.Module):
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
-            # print(selected[0].item(), state.robot_taking_decision[0])
+            # print(mask)
+            # print(selected)
 
             state = state.update(selected)
 
@@ -367,10 +368,11 @@ class AttentionModel(nn.Module):
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
-        u = (r == 0).double()
-        cost = r - torch.mul(u, torch.exp(-d))
+        # r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        # d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        # u = (r == 0).double()
+        # print(state.tasks_done_success.sum()/state.tasks_done_success.size()[0])
+        cost = state.lengths #r - torch.mul(u, torch.exp(-d))
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):
@@ -480,8 +482,8 @@ class AttentionModel(nn.Module):
         robots_current_destination = state.robots_current_destination.clone()
 
 
-        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_range_remaining[:,:,None], state.coords[state.ids,state.robot_depot_association]),-1)
-        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robot_taking_decision_range),-1) # add depot info here??
+        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.coords[state.ids,state.robot_depot_association]),-1)
+        decision_robot_state = state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1) # add depot info here??
 
 
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)

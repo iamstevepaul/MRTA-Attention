@@ -21,9 +21,9 @@ def get_options(args=None):
     parser.add_argument('--agent_max_speed', type=int, default=10, help="Max speed for the robot")
     parser.add_argument('--enable_capacity_constraint', type=bool, default=False, help="Set it to true to enable capacity constraint")
     parser.add_argument('--enable_range_constraint', type=bool, default=True, help="Set it true to enable range constraint")
-    parser.add_argument('--deadline_min', type=int, default=.1,
+    parser.add_argument('--deadline_min', type=int, default=100,
                         help="Min value for deadline")
-    parser.add_argument('--deadline_max', type=int, default=1,
+    parser.add_argument('--deadline_max', type=int, default=101,
                         help="Max value for deadline")
 
     parser.add_argument('--val_size', type=int, default=1000, # changed
@@ -46,7 +46,7 @@ def get_options(args=None):
     parser.add_argument('--lr_critic', type=float, default=1e-4, help="Set the learning rate for the critic network")
     parser.add_argument('--lr_decay', type=float, default=1.0, help='Learning rate decay per epoch')
     parser.add_argument('--eval_only', action='store_true', help='Set this value to only evaluate model')
-    parser.add_argument('--n_epochs', type=int, default=5, help='The number of epochs to train')
+    parser.add_argument('--n_epochs', type=int, default=300, help='The number of epochs to train')
     parser.add_argument('--seed', type=int, default=1234, help='Random seed to use')
     parser.add_argument('--max_grad_norm', type=float, default=1.0,
                         help='Maximum L2 norm for gradient clipping, default 1.0 (0 to disable clipping)')
