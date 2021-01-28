@@ -102,17 +102,17 @@ class AttentionModel(nn.Module):
 
 
 
-        # self.embedder = GraphAttentionEncoder(
-        #     n_heads=n_heads,
-        #     embed_dim=embedding_dim,
-        #     n_layers=self.n_encode_layers,
-        #     normalization=normalization
-        # ) ## this will be changed for CCN
-
-        self.embedder = CCN3(
+        self.embedder = GraphAttentionEncoder(
+            n_heads=n_heads,
             embed_dim=embedding_dim,
-            node_dim=2
-        )
+            n_layers=self.n_encode_layers,
+            normalization=normalization
+        ) ## this will be changed for CCN
+        #
+        # self.embedder = CCN3(
+        #     embed_dim=embedding_dim,
+        #     node_dim=2
+        # )
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -142,8 +142,8 @@ class AttentionModel(nn.Module):
         else:
             import time
             # start_time = time.time()
-            # embeddings, _ = self.embedder(self._init_embed(input))
-            embeddings, _ = self.embedder(input)
+            embeddings, _ = self.embedder(self._init_embed(input))
+            # embeddings, _ = self.embedder(input)
             # end_time = time.time() - start_time
 
         _log_p, pi, cost = self._inner(input, embeddings)
@@ -212,7 +212,7 @@ class AttentionModel(nn.Module):
 
     def _init_embed(self, input):
 
-        features = ('deadline',)
+        features = ()
         # print(self.init_embed(torch.cat((
         #             input['loc'],
         #             *(input[feat][:, :, None] for feat in features)
@@ -220,11 +220,9 @@ class AttentionModel(nn.Module):
 
         return torch.cat(
             (
-                self.init_embed_depot(input['depot'])[:, None, :],
-                self.init_embed(torch.cat((
-                    input['loc'],
-                    *(input[feat][:, :, None] for feat in features)
-                ), -1))
+                self.init_embed_depot(input['depot']),
+                self.init_embed(
+                    input['loc'])
             ),
             1
         )
