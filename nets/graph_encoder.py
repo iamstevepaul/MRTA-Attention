@@ -239,10 +239,10 @@ class CCN3(nn.Module):
         concat = torch.cat((F0_embedding_3d[:, :, None, :], neighbour_delta_embedding), 2)
 
         F_embed_final = self.test_layer_1(concat).sum(dim=2)
-        h2_neighbor = F_embed_final[:, neighbors][0]
-        F_embed_final_2 = self.test_layer_2(h2_neighbor).sum(dim=2)
+        #h2_neighbor = F_embed_final[:, neighbors][0]
+        #F_embed_final_2 = self.test_layer_2(h2_neighbor).sum(dim=2)
         init_depot_embed = self.init_embed_depot(X['depot'])
-        h = torch.cat((init_depot_embed, F_embed_final_2), -2)
+        h = torch.cat((init_depot_embed, F_embed_final), -2)
         return (
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
