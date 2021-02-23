@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,11 +143,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.eval" />
-      <item itemvalue="Python.run" />
       <item itemvalue="Python.Convergence" />
       <item itemvalue="Python.Time" />
+      <item itemvalue="Python.eval" />
       <item itemvalue="Python.generate_mrta_data" />
+      <item itemvalue="Python.run" />
     </list>
     <recent_temporary>
       <list>
@@ -174,18 +173,14 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="634" y="314" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1604200300379">
-      <screen x="0" y="0" width="1792" height="1120" />
-    </state>
-    <state x="634" y="314" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1604200300379" />
     <state x="891" y="48" key="#xdebugger.evaluate" timestamp="1610425526762">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state x="891" y="48" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1610425526762" />
-    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog" timestamp="1610426264006">
-      <screen x="0" y="25" width="1792" height="983" />
+    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog" timestamp="1614119530166">
+      <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1610425161952" />
+    <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1614119530166" />
     <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.25.1792.983@0.25.1792.983" timestamp="1610426264006" />
     <state width="1771" height="268" key="GridCell.Tab.0.bottom" timestamp="1610425477912">
       <screen x="0" y="0" width="1792" height="1120" />
@@ -207,30 +202,22 @@
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
-    <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.23.1792.990@0.23.1792.990" timestamp="1604212470970" />
     <state width="1771" height="268" key="GridCell.Tab.1.center" timestamp="1610425482470">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="1771" height="268" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
-    <state width="1771" height="268" key="GridCell.Tab.1.center/0.23.1792.990@0.23.1792.990" timestamp="1604212470969" />
     <state width="1771" height="268" key="GridCell.Tab.1.left" timestamp="1610425482469">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="1771" height="268" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482469" />
-    <state width="1771" height="268" key="GridCell.Tab.1.left/0.23.1792.990@0.23.1792.990" timestamp="1604212470969" />
     <state width="1771" height="268" key="GridCell.Tab.1.right" timestamp="1610425482470">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="1771" height="268" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1610425482470" />
-    <state width="1771" height="268" key="GridCell.Tab.1.right/0.23.1792.990@0.23.1792.990" timestamp="1604212470970" />
     <state width="896" height="560" key="XDebugger.FullValuePopup" timestamp="1610416598264">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
     <state width="896" height="560" key="XDebugger.FullValuePopup/0.0.1792.1120@0.0.1792.1120" timestamp="1610416598264" />
-    <state x="573" y="376" key="com.intellij.ide.util.TipDialog" timestamp="1603380933003">
-      <screen x="0" y="0" width="1792" height="1120" />
-    </state>
-    <state x="573" y="376" key="com.intellij.ide.util.TipDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1603380933003" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

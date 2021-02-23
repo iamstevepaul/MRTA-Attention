@@ -16,7 +16,7 @@ def get_options(args=None):
     parser.add_argument('--epoch_size', type=int, default=10000, help="Number of instances per epoch during training") # changed
     parser.add_argument('--n_agents', type=int, default=10, help="Number of robots")
     parser.add_argument('--n_depot', type=int, default=1, help="Number of depot")
-    parser.add_argument('--agent_max_range', type=int, default=4, help="Max range for the robot")
+    parser.add_argument('--agent_max_range', type=int, default=30, help="Max range for the robot")
     parser.add_argument('--agent_max_capacity', type=int, default=10, help="Max capacity for the robot")
     parser.add_argument('--agent_max_speed', type=int, default=10, help="Max speed for the robot")
     parser.add_argument('--enable_capacity_constraint', type=bool, default=False, help="Set it to true to enable capacity constraint")
@@ -46,7 +46,7 @@ def get_options(args=None):
     parser.add_argument('--lr_critic', type=float, default=1e-4, help="Set the learning rate for the critic network")
     parser.add_argument('--lr_decay', type=float, default=1.0, help='Learning rate decay per epoch')
     parser.add_argument('--eval_only', action='store_true', help='Set this value to only evaluate model')
-    parser.add_argument('--n_epochs', type=int, default=5, help='The number of epochs to train')
+    parser.add_argument('--n_epochs', type=int, default=200, help='The number of epochs to train')
     parser.add_argument('--seed', type=int, default=1234, help='Random seed to use')
     parser.add_argument('--max_grad_norm', type=float, default=1.0,
                         help='Maximum L2 norm for gradient clipping, default 1.0 (0 to disable clipping)')
@@ -55,7 +55,7 @@ def get_options(args=None):
                         help='Exponential moving average baseline decay (default 0.8)')
     parser.add_argument('--baseline', default='rollout',
                         help="Baseline to use: 'rollout', 'critic' or 'exponential'. Defaults to no baseline.")
-    parser.add_argument('--bl_alpha', type=float, default=0.05,
+    parser.add_argument('--bl_alpha', type=float, default=0.8,
                         help='Significance in the t-test for updating rollout baseline')
     parser.add_argument('--bl_warmup_epochs', type=int, default=None,
                         help='Number of epochs to warmup the baseline, default None means 1 for rollout (exponential '
