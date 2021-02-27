@@ -67,12 +67,12 @@ class MRTA(object):
 def make_instance(args):
     depot, loc, deadline, *args = args
     initial_size = 100
-    n_agents = 10
+    n_agents = 400
     max_capacity = 10
-    max_range = 4
+    max_range = 30
     max_speed = 10
     enable_capacity_constraint = False
-    enable_range_constraint = True
+    enable_range_constraint = False
     grid_size = 1
     if len(args) > 0:
         depot_types, customer_types, grid_size = args

@@ -239,9 +239,9 @@ class AttentionModel(nn.Module):
         # print(state.visited_)
         # print(state.all_finished().item())
         # print(state.visited_.all().item())
-        time_sl = []
+
+        # initial tasks
         while not (self.shrink_size is None and not (state.all_finished().item() == 0)):
-            start_time = time.time()
 
             if self.shrink_size is not None:
                 unfinished = torch.nonzero(state.get_finished() == 0)
@@ -255,17 +255,16 @@ class AttentionModel(nn.Module):
                     state = state[unfinished]
                     fixed = fixed[unfinished]
 
+            # Only the required ones goes here, so we should
+            #  We need a variable that track which all tasks are available
             log_p, mask = self._get_log_p(fixed, state)
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
             # print(selected[0].item(), state.robot_taking_decision[0])
-            end_time1 = time.time() - start_time
+
             state = state.update(selected)
-            start_time2 = time.time()
-            # cost = torch.div(state.lengths, state.tasks_done_success)
-            # cost = torch.mul(1 - torch.div(state.tasks_done_success, float(state.n_nodes)), 0.8) + torch.mul(
-            #     torch.div(state.lengths, float(state.n_nodes) * 1.414), 0.2)
+
             # Now make log_p, selected desired output size by 'unshrinking'
             if self.shrink_size is not None and state.ids.size(0) < batch_size:
                 log_p_, selected_ = log_p, selected
@@ -280,21 +279,16 @@ class AttentionModel(nn.Module):
             sequences.append(selected)
             # print(state.all_finished().item() == 0)
 
+            act = state.active_tasks
             i += 1
-            end_time2 = time.time() - start_time2
-            time_sl.append(end_time1 + end_time2)
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        # r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
-        u = (r == 0).double()
-        cost = r - torch.mul(u, torch.exp(-d))
-
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
-        u = (r == 0).double()
-        cost = r - torch.mul(u, torch.exp(-d))
-        return torch.stack(outputs, 1), torch.stack(sequences, 1), cost, state.tasks_done_success.tolist()
+        # u = (r == 0).double()
+        # print(state.tasks_done_success)
+        cost = -torch.exp(-d)
+        return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def _inner(self, input, embeddings):
 
@@ -360,7 +354,7 @@ class AttentionModel(nn.Module):
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # print(state.tasks_done_success)
-        cost = -torch.exp(-d)
+        cost = d #-torch.exp(-d)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):

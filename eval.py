@@ -85,7 +85,7 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     # This is parallelism, even if we use multiprocessing (we report as if we did not use multiprocessing, e.g. 1 GPU)
     parallelism = opts.eval_batch_size
 
-    costs, task, durations, tours = zip(*results)  # Not really costs since they should be negative
+    costs, durations, tours = zip(*results)  # Not really costs since they should be negative
 
     # print("Average cost: {} +- {}".format(np.mean(costs), 2 * np.std(costs) / np.sqrt(len(costs))))
     # print("Average serial duration: {} +- {}".format(
@@ -113,9 +113,9 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     # assert opts.f or not os.path.isfile(
     #     out_file), "File already exists! Try running with -f option to overwrite."
     #
-    n_nodes = 200
-    n_agents = 20
-    out_file = 'results/mrta/200_n_20_r_mrta_sms.pkl'
+    n_nodes = 2000
+    n_agents = 400
+    out_file = 'results/mtsp/'+ str(n_nodes)+'_n_' + str(n_agents) +'_r_mtsp_CAM.pkl'
     # out_file = 'randa.pkl'
     save_dataset((results, parallelism), out_file)
 
@@ -157,8 +157,8 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
                     iter_rep = 1
                 assert batch_rep > 0
                 # This returns (batch_size, iter_rep shape)
-                sequences, costs, tasks_done = model.sample_many(batch, batch_rep=batch_rep, iter_rep=iter_rep)
-                tasks_done_total.extend(tasks_done)
+                sequences, costs = model.sample_many(batch, batch_rep=batch_rep, iter_rep=iter_rep)
+                # tasks_done_total.extend(tasks_done)
                 batch_size = len(costs)
                 ids = torch.arange(batch_size, dtype=torch.int64, device=costs.device)
             else:
@@ -191,25 +191,25 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
             else:
                 assert False, "Unkown problem: {}".format(model.problem.NAME)
             # Note VRP only
-            results.append({"cost":cost, "tasks_done": tasks_done_total[i][0],"total_duration":duration, "sequence":seq})
+            results.append({"cost":cost,"total_duration":duration, "sequence":seq})
             i +=1
     # plot tasks done here
-    plt.plot(tasks_done_total)
-    plt.show()
+    # plt.plot(tasks_done_total)
+    # plt.show()
     return results
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--datasets", nargs='+', default=["data/mrta/50_nodes_mrta.pkl"], help="Filename of the dataset(s) to evaluate")
+    parser.add_argument("--datasets", nargs='+', default=["data/mtsp/2000_nodes_mtsp.pkl"], help="Filename of the dataset(s) to evaluate")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument("-o", default=None, help="Name of the results file to write")
     parser.add_argument('--val_size', type=int, default=100,
                         help='Number of instances used for reporting validation performance')
     parser.add_argument('--offset', type=int, default=0,
                         help='Offset where to start in dataset (default 0)')
-    parser.add_argument('--eval_batch_size', type=int, default=10,
+    parser.add_argument('--eval_batch_size', type=int, default=1,
                         help="Batch size to use during (baseline) evaluation")
     # parser.add_argument('--decode_type', type=str, default='greedy',
     #                     help='Decode type, greedy or sampling')
@@ -220,7 +220,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/statictasks', type=str)
+    parser.add_argument('--model', default='outputs/mtsp/200_CAM', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')

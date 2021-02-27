@@ -183,7 +183,7 @@ def sample_many(inner_func, get_cost_func, input, batch_rep=1, iter_rep=1):
     pis = []
     tasks_done = None
     for i in range(iter_rep):
-        _log_p, pi, cost, tasks_done = inner_func(input)
+        _log_p, pi, cost = inner_func(input)
         # pi.view(-1, batch_rep, pi.size(-1))
         # cos, mask = get_cost_func(input, pi)
         mask = None
@@ -204,4 +204,4 @@ def sample_many(inner_func, get_cost_func, input, batch_rep=1, iter_rep=1):
     # (batch_size, minlength)
     minpis = pis[torch.arange(pis.size(0), out=argmincosts.new()), argmincosts]
 
-    return minpis, mincosts, tasks_done
+    return minpis, mincosts
