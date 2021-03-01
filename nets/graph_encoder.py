@@ -230,7 +230,7 @@ class CCN3(nn.Module):
         # F0_embedding.reshape([1])
 
         dist_mat = (x2[:, None] - x2[:, :, None]).norm(dim=-1, p=2)  ## device to cuda to be added
-        neighbors = dist_mat.sort().indices[:, :, :6]  # for 6 neighbours
+        neighbors = dist_mat.sort().indices[:, :, :10]  # for 6 neighbours
         neighbour = x[:, neighbors][0]
         neighbour_delta = neighbour - x[:, :, None, :]
         neighbour_delta_embedding = self.neighbour_encode(neighbour_delta)

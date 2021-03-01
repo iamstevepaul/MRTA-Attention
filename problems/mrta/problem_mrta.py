@@ -67,7 +67,7 @@ class MRTA(object):
 def make_instance(args):
     depot, loc, deadline, *args = args
     initial_size = 100
-    n_agents = 400
+    n_agents = 50
     max_capacity = 10
     max_range = 30
     max_speed = 10
