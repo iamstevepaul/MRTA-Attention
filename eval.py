@@ -117,7 +117,7 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     n_agents = 50
     out_file = 'results/mtsp/'+ str(n_nodes)+'_n_' + str(n_agents) +'_r_mtsp_CAM.pkl'
     # out_file = 'randa.pkl'
-    save_dataset((results, parallelism), out_file)
+    # save_dataset((results, parallelism), out_file)
 
     return costs, tours, durations
 

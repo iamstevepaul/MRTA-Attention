@@ -226,13 +226,13 @@ class CCN3(nn.Module):
         x2 = x[:, :, 0:2]
         activ = nn.LeakyReLU()
         # F0_embedding_2d = self.init_embed_2d(x2)
-        F0_embedding_3d = self.init_embed(x)
+        F0_embedding_3d = self.init_embed(x2)
         # F0_embedding.reshape([1])
 
         dist_mat = (x2[:, None] - x2[:, :, None]).norm(dim=-1, p=2)  ## device to cuda to be added
         neighbors = dist_mat.sort().indices[:, :, :10]  # for 6 neighbours
-        neighbour = x[:, neighbors][0]
-        neighbour_delta = neighbour - x[:, :, None, :]
+        neighbour = x2[:, neighbors][0]
+        neighbour_delta = neighbour - x2[:, :, None, :]
         neighbour_delta_embedding = self.neighbour_encode(neighbour_delta)
         concat = torch.cat((F0_embedding_3d[:, :, None, :], neighbour_delta_embedding), 2)
 

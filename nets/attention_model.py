@@ -105,7 +105,7 @@ class AttentionModel(nn.Module):
 
         self.embedder = CCN3(
             embed_dim=embedding_dim,
-            node_dim=3
+            node_dim=2
         )
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -287,7 +287,7 @@ class AttentionModel(nn.Module):
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # print(state.tasks_done_success)
-        cost = -torch.exp(-d)
+        cost = d#torch.exp(-d)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def _inner(self, input, embeddings):
