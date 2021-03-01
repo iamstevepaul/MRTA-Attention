@@ -45,7 +45,7 @@ if __name__ == "__main__":
                         help="Distributions to generate for problem, default 'all'.")
 
     parser.add_argument("--dataset_size", type=int, default=100, help="Size of the dataset")
-    parser.add_argument('--graph_sizes', type=int, nargs='+', default=[2000],
+    parser.add_argument('--graph_sizes', type=int, nargs='+', default=[10000],
                         help="Sizes of problem instances (default 20, 50, 100)")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument('--seed', type=int, default=1234, help="Random seed")
@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
                 print(dataset[0])
 
-                save_dataset(dataset, datadir+"/2000_nodes_mtsp.pkl")
+                save_dataset(dataset, datadir+"/10000_nodes_mtsp.pkl")
