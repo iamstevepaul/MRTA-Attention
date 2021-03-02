@@ -284,10 +284,10 @@ class AttentionModel(nn.Module):
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
         # r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        # d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # print(state.tasks_done_success)
-        cost = d#torch.exp(-d)
+        cost = state.lengths#d#torch.exp(-d)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def _inner(self, input, embeddings):
@@ -351,10 +351,10 @@ class AttentionModel(nn.Module):
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
         # r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        #d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # print(state.tasks_done_success)
-        cost = d #-torch.exp(-d)
+        cost = state.lengths#d #-torch.exp(-d)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):

@@ -113,11 +113,11 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     # assert opts.f or not os.path.isfile(
     #     out_file), "File already exists! Try running with -f option to overwrite."
     #
-    n_nodes = 5000
-    n_agents = 500
+    n_nodes = 2000
+    n_agents = 400
     out_file = 'results/mtsp/'+ str(n_nodes)+'_n_' + str(n_agents) +'_r_mtsp_CAM.pkl'
     # out_file = 'randa.pkl'
-    # save_dataset((results, parallelism), out_file)
+    save_dataset((results, parallelism), out_file)
 
     return costs, tours, durations
 
@@ -202,7 +202,7 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--datasets", nargs='+', default=["data/mtsp/5000_nodes_mtsp.pkl"], help="Filename of the dataset(s) to evaluate")
+    parser.add_argument("--datasets", nargs='+', default=["data/mtsp/2000_nodes_mtsp.pkl"], help="Filename of the dataset(s) to evaluate")
     parser.add_argument("-f", action='store_true', help="Set true to overwrite")
     parser.add_argument("-o", default=None, help="Name of the results file to write")
     parser.add_argument('--val_size', type=int, default=100,
@@ -220,7 +220,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/mtsp/200_CAM_3', type=str)
+    parser.add_argument('--model', default='outputs/mtsp/200_CAM_4', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')
