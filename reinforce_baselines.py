@@ -208,6 +208,9 @@ class RolloutBaseline(Baseline):
 
         print("Epoch {} candidate mean {}, baseline epoch {} mean {}, difference {}".format(
             epoch, candidate_mean, self.epoch, self.mean, candidate_mean - self.mean))
+        users_file = open("convergence.txt", "a")
+        users_file.write(str(self.mean)+',' +'\n')
+        users_file.close()
         if candidate_mean - self.mean < 0:
             # Calc p value
             t, p = ttest_rel(candidate_vals, self.bl_vals)

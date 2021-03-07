@@ -4,7 +4,7 @@
 #SBATCH --qos=general-compute
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:2
-#SBATCH --job-name="mrta_att_stevepau"
+#SBATCH --job-name="mrta_stevepau"
 #SBATCH --output=output_mrta.out
 #SBATCH --error=error_mrta.err
 #SBATCH --mail-user=stevepau@buffalo.edu

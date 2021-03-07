@@ -75,7 +75,7 @@ class AttentionModel(nn.Module):
         self.checkpoint_encoder = checkpoint_encoder
         self.shrink_size = shrink_size
         torch.autograd.set_detect_anomaly(True)
-        self.robots_state_query_embed = nn.Linear(5, embedding_dim)
+        self.robots_state_query_embed = nn.Linear(3, embedding_dim)
         self.robot_taking_decision_query = nn.Linear(3, embedding_dim)
 
         # Problem specific context parameters (placeholder and step context dimension)
@@ -111,7 +111,7 @@ class AttentionModel(nn.Module):
 
         self.embedder = CCN3(
             embed_dim=embedding_dim,
-            node_dim=3
+            node_dim=4
         )
 
 
@@ -367,6 +367,7 @@ class AttentionModel(nn.Module):
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
+        # print(state.tasks_done_success)
         r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         u = (r == 0).double()
@@ -480,8 +481,8 @@ class AttentionModel(nn.Module):
         robots_current_destination = state.robots_current_destination.clone()
 
 
-        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_range_remaining[:,:,None], state.coords[state.ids,state.robot_depot_association]),-1)
-        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robot_taking_decision_range),-1) # add depot info here??
+        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1)
+        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
 
 
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)

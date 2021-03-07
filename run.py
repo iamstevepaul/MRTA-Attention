@@ -28,6 +28,8 @@ def run(opts):
     tb_logger = None
     # if not opts.no_tensorboard:
     #     tb_logger = TbLogger(os.path.join(opts.log_dir, "{}_{}".format(opts.problem, opts.graph_size), opts.run_name))
+    # pickle.dump("ffg", open("convergence.txt", 'w'))
+    users_file = open("convergence.txt", "w")
 
     os.makedirs(opts.save_dir)
     # Save arguments so exact configuration can always be found
@@ -151,6 +153,7 @@ def run(opts):
             )
             total_time = (time.time() - start_time)/60.0
             print('Epoch: ', epoch, ' time: ', total_time, ' minutes.')
+    users_file.close()
 
 
 if __name__ == "__main__":
