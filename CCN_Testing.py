@@ -22,7 +22,7 @@ class CCN3(nn.Module):
     def forward(self, X, mask=None):
         x = torch.cat((X['loc'], X['deadline'][:, :, None]), 2)
         x2 = x[:, :, 0:2]
-        activ = nn.LeakyReLU()
+        # activ = nn.LeakyReLU()
         # F0_embedding_2d = self.init_embed_2d(x2)
         F0_embedding_3d = self.init_embed(x)
         # F0_embedding.reshape([1])

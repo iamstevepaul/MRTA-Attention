@@ -283,7 +283,7 @@ class StateMRTA(NamedTuple):
         # robot_taking_decision = self.robot_taking_decision
 
         # Cannot visit the depot if just visited and still unserved nodes
-        mask_depot = torch.tensor(torch.ones((mask_loc.size()[0], 1)).clone().detach(), dtype=torch.bool) #(self.robots_current_destination[self.ids, robot_taking_decision] == 0) & ((mask_loc == 0).int().sum(-1) > 0)
+        mask_depot = torch.tensor(torch.ones((mask_loc.size()[0], 1)).clone().detach(), dtype=torch.bool, device=mask_loc.device) #(self.robots_current_destination[self.ids, robot_taking_decision] == 0) & ((mask_loc == 0).int().sum(-1) > 0)
         full_mask = torch.cat((mask_depot[:, :, None], mask_loc), -1)
 
         return full_mask
