@@ -6,7 +6,7 @@ from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN3
+from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -109,8 +109,13 @@ class AttentionModel(nn.Module):
         #     normalization=normalization
         # ) ## this will be changed for CCN
 
-        self.embedder = CCN3(
-            embed_dim=embedding_dim,
+        # self.embedder = CCN3(
+        #     embed_dim=embedding_dim,
+        #     node_dim=4
+        # )
+
+        self.embedder = GCAPCN(
+            n_dim=embedding_dim,
             node_dim=4
         )
 
