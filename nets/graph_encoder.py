@@ -272,7 +272,7 @@ class GCAPCN(nn.Module):
         distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
         A = (distance_matrix < .3).to(torch.int8)
         num_samples, num_locations, _ = X.size()
-        D = torch.mul(torch.eye(num_locations).expand((num_samples, num_locations, num_locations)),
+        D = torch.mul(torch.eye(num_locations, device=distance_matrix.device).expand((num_samples, num_locations, num_locations)),
                       (A.sum(-1) - 1)[:, None].expand((num_samples, num_locations, num_locations)))
         L = D - A
         F0 = self.init_embed(X)
