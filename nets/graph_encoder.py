@@ -243,3 +243,48 @@ class CCN3(nn.Module):
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
         )
+
+class GCAPCN(nn.Module):
+
+    def __init__(self,
+                 n_layers = 3,
+                 n_hops = 5,
+                 n_dim = 128,
+                 n_p = 3,
+                 node_dim = 3
+                 ):
+        super(GCAPCN, self).__init__()
+        self.n_layers = n_layers
+        self.n_hops = n_hops
+        self.n_dim = n_dim
+        self.n_p = n_p
+        self.node_dim = node_dim
+        self.init_embed = nn.Linear(node_dim, n_dim)
+        self.init_embed_depot = nn.Linear(2, n_dim)
+        self.W1 = nn.Linear(n_dim*n_p, n_dim)
+        self.W2 = nn.Linear(n_dim * n_p, n_dim)
+        self.activ = nn.LeakyReLU()
+
+    def forward(self, data, mask=None):
+        X = torch.cat((data['loc'], data['deadline'][:, :, None]), 2)
+        X_loc = X[:, :, 0:2]
+        distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
+        A = (distance_matrix < .3).to(torch.int8)
+        num_samples, num_locations, _ = X.size()
+        D = torch.mul(torch.eye(num_locations, device=distance_matrix.device).expand((num_samples, num_locations, num_locations)),
+                      (A.sum(-1) - 1)[:, None].expand((num_samples, num_locations, num_locations)))
+        L = D - A
+        F0 = self.init_embed(X)
+
+        g1 = torch.cat((F0[:,:,:,None], torch.matmul(L,F0)[:,:,:,None], torch.matmul(torch.matmul(L,L), F0)[:,:,:,None]), -1).reshape((num_samples, num_locations, -1))
+
+        F1 =  self.activ(self.W1(g1))
+        g2 = torch.cat((F1[:,:,:,None], torch.matmul(L,F1)[:,:,:,None], torch.matmul(torch.matmul(L,L), F1)[:,:,:,None]), -1).reshape((num_samples, num_locations, -1))
+        init_depot_embed = self.init_embed_depot(data['depot'])
+        h =  self.activ(self.W2(g2))
+        h = torch.cat((init_depot_embed, h), -2)
+        return (
+            h,  # (batch_size, graph_size, embed_dim)
+            h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
+        )
+
