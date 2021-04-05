@@ -74,6 +74,8 @@ class StateMRTA(NamedTuple):
     n_nodes: torch.Tensor
     initial_size: torch.Tensor
     n_depot: torch.Tensor
+    robots_initial_loc: torch.Tensor
+    robots_current_dest_loc: torch.Tensor
 
 
 
@@ -160,7 +162,9 @@ class StateMRTA(NamedTuple):
             robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
-            robots_work_capacity= torch.randint(1,2,(batch_size, n_agents), dtype=torch.float, device=loc.device)/100,
+            robots_work_capacity= input['robot_capacity'],
+            robots_initial_loc=input['robot_loc'],
+            robots_current_dest_loc = input['robot_loc'],
             depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             max_capacity = max_capacity,
             n_agents = n_agents,
@@ -197,7 +201,10 @@ class StateMRTA(NamedTuple):
         # print("Agent taking decision: ", self.robot_taking_decision)
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
 
-        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        # cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        robots_current_dest_loc = self.robots_current_dest_loc
+        cur_coords = robots_current_dest_loc[self.ids, self.robot_taking_decision]
+
         # print('Current coordiantes: ',  cur_coords)
         # print('Selected node: ', selected)
         time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
@@ -239,6 +246,7 @@ class StateMRTA(NamedTuple):
             visited_ = mask_long_scatter(self.visited_, prev_a - 1)
 
         new_cur_coord = self.coords[self.ids, selected]
+        robots_current_dest_loc[self.ids, self.robot_taking_decision] = new_cur_coord
 
         lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
         visited_[:,:,0] = 0
@@ -253,6 +261,7 @@ class StateMRTA(NamedTuple):
             next_decision_time = sorted_time[self.ids,0],
             visited_=visited_,
             lengths=lengths, cur_coord=new_cur_coord,
+            robots_current_dest_loc = robots_current_dest_loc,
             i=self.i + 1
         )
 

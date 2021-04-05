@@ -10,6 +10,7 @@ from utils.data_utils import save_dataset
 from torch.utils.data import DataLoader
 import time
 from datetime import timedelta
+import pickle
 from utils.functions import parse_softmax_temperature
 import matplotlib.pyplot as plt
 mp = torch.multiprocessing.get_context('spawn')
@@ -117,9 +118,9 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     n_agents = 20
     out_file = 'results/mrta/200_n_20_r_mrta_sms.pkl'
     # out_file = 'randa.pkl'
-    save_dataset((results, parallelism), out_file)
+    # save_dataset((results, parallelism), out_file)
 
-    return costs, tours, durations
+    return results
 
 
 def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
@@ -194,8 +195,8 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
             results.append({"cost":cost, "tasks_done": tasks_done_total[i][0],"total_duration":duration, "sequence":seq})
             i +=1
     # plot tasks done here
-    plt.plot(tasks_done_total)
-    plt.show()
+    # plt.plot(tasks_done_total)
+    # plt.show()
     return results
 
 
@@ -220,7 +221,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/statictasks', type=str)
+    parser.add_argument('--model', default='outputs/mrta_gini_gcapcn', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')
@@ -235,7 +236,15 @@ if __name__ == "__main__":
         "Cannot specify result filename with more than one dataset or more than one width"
 
     widths = opts.width if opts.width is not None else [0]
-
+    all_files = "data/mrta_gini/gini_data_sets.pkl"
+    file_n = open(all_files, 'rb')
+    datasets = pickle.load(file_n)
+    tot = []
     for width in widths:
-        for dataset_path in opts.datasets:
-            eval_dataset(dataset_path, width, opts.softmax_temperature, opts)
+        for dataset_path in datasets:
+            results = eval_dataset(dataset_path, width, opts.softmax_temperature, opts)
+            tot.append(results[0]['tasks_done'])
+import csv
+with open('GCAPCN1.csv', 'w') as f:
+    write = csv.writer(f)
+    write.writerows((np.array(tot).T).reshape((96,1)).tolist())

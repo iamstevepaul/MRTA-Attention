@@ -485,9 +485,12 @@ class AttentionModel(nn.Module):
 
         robots_current_destination = state.robots_current_destination.clone()
 
-
-        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1)
-        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
+        ######## this has to be changed such that the initial position for robots is considered when starting
+        # current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1)
+        current_robot_states = torch.cat(
+            (state.robots_current_dest_loc, state.robots_work_capacity[:, :, None]), -1)
+        # decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
+        decision_robot_state = torch.cat((state.robots_current_dest_loc[state.ids, state.robot_taking_decision].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
 
 
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)

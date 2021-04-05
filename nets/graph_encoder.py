@@ -262,9 +262,9 @@ class GCAPCN(nn.Module):
         self.node_dim = node_dim
         self.init_embed = nn.Linear(node_dim, n_dim)
         self.init_embed_depot = nn.Linear(2, n_dim)
-        self.W1 = nn.Linear(n_dim*n_p, n_dim)
+        self.W1 = nn.Linear(n_dim * n_p, n_dim)
         self.W2 = nn.Linear(n_dim * n_p, n_dim)
-        self.activ = nn.LeakyReLU()
+        self.activ = nn.Tanh()
 
     def forward(self, data, mask=None):
         X = torch.cat((data['loc'], data['deadline'][:, :, None], data['workload'][:, :, None]), -1)

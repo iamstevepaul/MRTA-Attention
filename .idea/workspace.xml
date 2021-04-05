@@ -2,7 +2,222 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eada467d-d91d-48f4-b03e-8f02b912ddf6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/agent/a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/demo_case.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r11a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r12a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r13a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/r14a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r11a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r12a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r13a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group1/taskloc/r14a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r21a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r22a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r23a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a2i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a2i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a2i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a3i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a3i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a3i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a5i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a5i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a5i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a7i00.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a7i01.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/r24a7i02.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r21a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r22a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r23a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a2i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a2i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a2i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a3i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a3i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a3i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a5i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a5i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a5i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a7i00.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a7i01.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/group2/taskloc/r24a7i02.loc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/main_convert_txt2dict.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/note.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mrta_gini/readme.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/generate_data_mrta_gini.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convergence.txt" beforeDir="false" afterPath="$PROJECT_DIR$/convergence.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eval.py" beforeDir="false" afterPath="$PROJECT_DIR$/eval.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/attention_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/attention_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/graph_encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/graph_encoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/problem_mrta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problems/mrta/state_mrta.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/mrta/state_mrta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,28 +251,7 @@
       <recent name="$PROJECT_DIR$/outputs/Results_200" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.run">
-    <configuration name="Convergence" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="MRTA-Attention" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Convergence.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.eval">
     <configuration name="GCAPCN" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MRTA-Attention" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -100,7 +294,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="generate_mrta_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="generate_data_mrta_gini" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MRTA-Attention" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -112,7 +306,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/generate_mrta_data.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/generate_data_mrta_gini.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_convert_txt2dict" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MRTA-Attention" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data/mrta_gini" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data/mrta_gini/main_convert_txt2dict.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -145,17 +360,17 @@
     <list>
       <item itemvalue="Python.eval" />
       <item itemvalue="Python.run" />
-      <item itemvalue="Python.Convergence" />
-      <item itemvalue="Python.generate_mrta_data" />
       <item itemvalue="Python.GCAPCN" />
+      <item itemvalue="Python.generate_data_mrta_gini" />
+      <item itemvalue="Python.main_convert_txt2dict" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.eval" />
+        <item itemvalue="Python.main_convert_txt2dict" />
+        <item itemvalue="Python.generate_data_mrta_gini" />
         <item itemvalue="Python.run" />
         <item itemvalue="Python.GCAPCN" />
-        <item itemvalue="Python.eval" />
-        <item itemvalue="Python.generate_mrta_data" />
-        <item itemvalue="Python.Convergence" />
       </list>
     </recent_temporary>
   </component>
@@ -173,63 +388,67 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="861" y="386" key="#xdebugger.evaluate" timestamp="1615821820766">
+    <state x="49" y="317" key="#xdebugger.XInspectDialog" timestamp="1617594048384">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="861" y="386" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1615821820766" />
+    <state x="49" y="317" key="#xdebugger.XInspectDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1617594048383" />
+    <state x="856" y="471" key="#xdebugger.evaluate" timestamp="1617594885206">
+      <screen x="0" y="0" width="1792" height="1120" />
+    </state>
+    <state x="856" y="471" key="#xdebugger.evaluate/0.0.1792.1120@0.0.1792.1120" timestamp="1617594885206" />
     <state x="100" y="100" width="1592" height="920" key="DiffContextDialog" timestamp="1610426264006">
       <screen x="0" y="25" width="1792" height="983" />
     </state>
     <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1610425161952" />
     <state x="100" y="100" width="1592" height="920" key="DiffContextDialog/0.25.1792.983@0.25.1792.983" timestamp="1610426264006" />
-    <state width="1771" height="373" key="GridCell.Tab.0.bottom" timestamp="1615822244941">
+    <state width="1771" height="268" key="GridCell.Tab.0.bottom" timestamp="1617594908419">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244941" />
+    <state width="1771" height="268" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1617594908419" />
     <state width="1771" height="373" key="GridCell.Tab.0.bottom/0.25.1792.983@0.25.1792.983" timestamp="1615512332927" />
-    <state width="1771" height="373" key="GridCell.Tab.0.center" timestamp="1615822244940">
+    <state width="1771" height="268" key="GridCell.Tab.0.center" timestamp="1617594908419">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244940" />
+    <state width="1771" height="268" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1617594908419" />
     <state width="1771" height="373" key="GridCell.Tab.0.center/0.25.1792.983@0.25.1792.983" timestamp="1615512332926" />
-    <state width="1771" height="373" key="GridCell.Tab.0.left" timestamp="1615822244939">
+    <state width="1771" height="268" key="GridCell.Tab.0.left" timestamp="1617594908418">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244939" />
+    <state width="1771" height="268" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1617594908418" />
     <state width="1771" height="373" key="GridCell.Tab.0.left/0.25.1792.983@0.25.1792.983" timestamp="1615512332926" />
-    <state width="1771" height="373" key="GridCell.Tab.0.right" timestamp="1615822244941">
+    <state width="1771" height="268" key="GridCell.Tab.0.right" timestamp="1617594908419">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244941" />
+    <state width="1771" height="268" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1617594908419" />
     <state width="1771" height="373" key="GridCell.Tab.0.right/0.25.1792.983@0.25.1792.983" timestamp="1615512332927" />
-    <state width="1771" height="373" key="GridCell.Tab.1.bottom" timestamp="1615822244943">
+    <state width="1771" height="268" key="GridCell.Tab.1.bottom" timestamp="1617595053135">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244943" />
-    <state width="1771" height="373" key="GridCell.Tab.1.bottom/0.25.1792.983@0.25.1792.983" timestamp="1615512332929" />
-    <state width="1771" height="373" key="GridCell.Tab.1.center" timestamp="1615822244942">
+    <state width="1771" height="268" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1617595053135" />
+    <state width="1771" height="224" key="GridCell.Tab.1.bottom/0.25.1792.983@0.25.1792.983" timestamp="1617570556403" />
+    <state width="1771" height="268" key="GridCell.Tab.1.center" timestamp="1617595053134">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244942" />
-    <state width="1771" height="373" key="GridCell.Tab.1.center/0.25.1792.983@0.25.1792.983" timestamp="1615512332928" />
-    <state width="1771" height="373" key="GridCell.Tab.1.left" timestamp="1615822244942">
+    <state width="1771" height="268" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1617595053134" />
+    <state width="1771" height="224" key="GridCell.Tab.1.center/0.25.1792.983@0.25.1792.983" timestamp="1617570556401" />
+    <state width="1771" height="268" key="GridCell.Tab.1.left" timestamp="1617595053134">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244942" />
-    <state width="1771" height="373" key="GridCell.Tab.1.left/0.25.1792.983@0.25.1792.983" timestamp="1615512332928" />
-    <state width="1771" height="373" key="GridCell.Tab.1.right" timestamp="1615822244943">
+    <state width="1771" height="268" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1617595053134" />
+    <state width="1771" height="224" key="GridCell.Tab.1.left/0.25.1792.983@0.25.1792.983" timestamp="1617570556401" />
+    <state width="1771" height="268" key="GridCell.Tab.1.right" timestamp="1617595053134">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="1771" height="373" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1615822244943" />
-    <state width="1771" height="373" key="GridCell.Tab.1.right/0.25.1792.983@0.25.1792.983" timestamp="1615512332928" />
-    <state width="896" height="560" key="XDebugger.FullValuePopup" timestamp="1615346711705">
+    <state width="1771" height="268" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1617595053134" />
+    <state width="1771" height="224" key="GridCell.Tab.1.right/0.25.1792.983@0.25.1792.983" timestamp="1617570556402" />
+    <state width="896" height="560" key="XDebugger.FullValuePopup" timestamp="1617593603836">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state width="896" height="560" key="XDebugger.FullValuePopup/0.0.1792.1120@0.0.1792.1120" timestamp="1615346711705" />
-    <state x="573" y="389" key="com.intellij.ide.util.TipDialog" timestamp="1615550475368">
+    <state width="896" height="560" key="XDebugger.FullValuePopup/0.0.1792.1120@0.0.1792.1120" timestamp="1617593603836" />
+    <state x="573" y="389" key="com.intellij.ide.util.TipDialog" timestamp="1617547155873">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="573" y="389" key="com.intellij.ide.util.TipDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1615550475368" />
+    <state x="573" y="389" key="com.intellij.ide.util.TipDialog/0.0.1792.1120@0.0.1792.1120" timestamp="1617547155873" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -241,8 +460,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/eval.py</url>
-          <line>160</line>
-          <option name="timeStamp" value="527" />
+          <line>246</line>
+          <option name="timeStamp" value="570" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

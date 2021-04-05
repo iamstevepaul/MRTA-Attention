@@ -67,31 +67,35 @@ class MRTA(object):
         return beam_search(state, beam_size, propose_expansions)
 
 
-def make_instance(args):
-    depot, loc, deadline, *args = args
+def make_instance(data):
+    loc = data['loc_data']['loc']
+    workload = data['loc_data']['workload']
+    deadline = data['loc_data']['deadline']
     initial_size = 100
-    n_agents = 10
+    n_agents = len(data['robot_data']['robots_capacity'])
     max_capacity = 10
     max_range = 4
-    max_speed = 10
+    max_speed = .01
     enable_capacity_constraint =  False
     enable_range_constraint = True
     grid_size = 1
-    if len(args) > 0:
-        depot_types, customer_types, grid_size = args
-    return {
+
+    return [{
         'loc': torch.tensor(loc, dtype=torch.float) / grid_size,
         'deadline': torch.tensor(deadline, dtype=torch.float),
-        'depot': torch.tensor(depot, dtype=torch.float) / grid_size,
+        'depot': torch.zeros((1, 2)),
+        'workload': torch.tensor(workload, dtype=torch.float),
         'initial_size':initial_size,
         'n_agents':n_agents,
         'max_range':max_range,
         'max_capacity':max_capacity,
         'max_speed':max_speed,
         'enable_capacity_constraint':enable_capacity_constraint,
-        'enable_range_constraint':enable_range_constraint
+        'enable_range_constraint':enable_range_constraint,
+        'robot_loc': torch.tensor(data['robot_data']['robots_loc'], dtype=torch.float),
+        'robot_capacity': torch.tensor(data['robot_data']['robots_capacity'], dtype=torch.float)
 
-    }
+    }]
 
 
 class MRTADataset(Dataset):
@@ -116,7 +120,7 @@ class MRTADataset(Dataset):
 
             with open(filename, 'rb') as f:
                 data = pickle.load(f)
-            self.data = [make_instance(args) for args in data[offset:offset+num_samples]]
+            self.data = make_instance(data)
 
         else:
 
