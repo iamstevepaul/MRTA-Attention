@@ -124,7 +124,7 @@ class MRTADataset(Dataset):
                 {
                     'loc': torch.FloatTensor(size, 2).uniform_(0, 1),
                     'depot': torch.FloatTensor(n_depot,2).uniform_(0, 1),
-                    'deadline':torch.FloatTensor(size).uniform_(deadline_min,deadline_max),
+                    'deadline':torch.FloatTensor(size).uniform_(deadline_min,deadline_max).ceil(),
                     'workload': torch.FloatTensor(size).uniform_(.2, .2),
                     'initial_size':initial_size,
                     'n_agents':torch.randint(2,8,(1,1)),

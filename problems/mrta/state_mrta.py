@@ -160,7 +160,7 @@ class StateMRTA(NamedTuple):
             robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
-            robots_work_capacity= torch.randint(1,2,(batch_size, n_agents), dtype=torch.float, device=loc.device)/100,
+            robots_work_capacity= torch.randint(1,3,(batch_size, n_agents), dtype=torch.float, device=loc.device)/100,
             depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             max_capacity = max_capacity,
             n_agents = n_agents,

@@ -270,7 +270,7 @@ class GCAPCN(nn.Module):
         X = torch.cat((data['loc'], data['deadline'][:, :, None], data['workload'][:, :, None]), -1)
         X_loc = X[:, :, 0:2]
         distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
-        A = (distance_matrix < .3).to(torch.int8)
+        A = (distance_matrix < 1.5).to(torch.int8)
         num_samples, num_locations, _ = X.size()
         D = torch.mul(torch.eye(num_locations, device=distance_matrix.device).expand((num_samples, num_locations, num_locations)),
                       (A.sum(-1) - 1)[:, None].expand((num_samples, num_locations, num_locations)))
