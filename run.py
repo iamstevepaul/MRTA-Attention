@@ -120,6 +120,7 @@ def run(opts):
         initial_size=opts.initial_size,
         n_depot=opts.n_depot,
         deadline_min=opts.deadline_min,
+        max_speed=opts.agent_max_speed,
         deadline_max=opts.deadline_max,
         distribution=opts.data_distribution)
 

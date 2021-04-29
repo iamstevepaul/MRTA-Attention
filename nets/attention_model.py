@@ -6,7 +6,7 @@ from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN
+from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, GCAPCN_K_3_P_4_L_2
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -114,10 +114,12 @@ class AttentionModel(nn.Module):
         #     node_dim=4
         # )
 
-        self.embedder = GCAPCN(
+        self.embedder = GCAPCN_K_3_P_4_L_2(
             n_dim=embedding_dim,
             node_dim=4
         )
+
+        # self.embedder = GCAPCN_K_3_P_4_L_2()
 
 
         # For each node we compute (glimpse key, glimpse value, logit key) so 3 * embedding_dim
@@ -377,6 +379,7 @@ class AttentionModel(nn.Module):
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         u = (r == 0).double()
         cost = r - torch.mul(u, torch.exp(-d))
+        cost = torch.div(cost, state.n_agents)
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):
@@ -485,8 +488,9 @@ class AttentionModel(nn.Module):
 
         robots_current_destination = state.robots_current_destination.clone()
 
+        working_robots = ((state.robots_initial_decision_sequence <= (state.n_agents - 1)).to(torch.float)).to(device=robots_current_destination.device)
 
-        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1)
+        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1) * working_robots[:, :, None]
         decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
 
 

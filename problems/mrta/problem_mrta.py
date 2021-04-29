@@ -89,7 +89,8 @@ def make_instance(args):
         'max_capacity':max_capacity,
         'max_speed':max_speed,
         'enable_capacity_constraint':enable_capacity_constraint,
-        'enable_range_constraint':enable_range_constraint
+        'enable_range_constraint':enable_range_constraint,
+        # 'robots_start_location': []
 
     }
 
@@ -104,7 +105,7 @@ class MRTADataset(Dataset):
                  n_agents = 20,
                  max_range = 4,
                  max_capacity = 10,
-                 max_speed = 10,
+                 max_speed = .01,
                  enable_capacity_constraint = False,
                  enable_range_constraint=True,
                  distribution=None):
@@ -132,11 +133,11 @@ class MRTADataset(Dataset):
                     'max_capacity':max_capacity,
                     'max_speed':max_speed,
                     'enable_capacity_constraint':enable_capacity_constraint,
-                    'enable_range_constraint':enable_range_constraint
+                    'enable_range_constraint':enable_range_constraint,
                 }
                 for i in range(num_samples)
-            ]
 
+            ]
 
         self.size = len(self.data)
 
