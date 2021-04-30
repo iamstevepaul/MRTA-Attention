@@ -175,7 +175,7 @@ class StateMRTA(NamedTuple):
         return len
 
     def update(self, selected):
-        print('************** New decision **************')
+        # print('************** New decision **************')
         selected = selected[:, None]  # Add dimension for step
         prev_a = selected
 
@@ -184,13 +184,13 @@ class StateMRTA(NamedTuple):
         current_time = self.next_decision_time
 
         # print('Current time: ', current_time[0].item())
-        print("Agent taking decision: ", self.robot_taking_decision)
+        # print("Agent taking decision: ", self.robot_taking_decision)
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
 
         # cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
         cur_coords = self.robots_current_destination_location[self.ids, self.robot_taking_decision]
         # print(self.robots_next_decision_time)
-        print('Selected node: ', selected)
+        # print('Selected node: ', selected)
         # time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
         time = (cur_coords - self.coords[self.ids, selected]).norm(2,2)/self.max_speed
         worktime = torch.div(self.workload[self.ids.view(-1), selected.view(-1) - 1],
@@ -198,7 +198,7 @@ class StateMRTA(NamedTuple):
                                  self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)])
         # print('Time for journey: ', time)
         self.robots_next_decision_time[self.ids, self.robot_taking_decision] += torch.add(time,worktime[:, None])
-        print('Robots next decision time: ', self.robots_next_decision_time)
+        # print('Robots next decision time: ', self.robots_next_decision_time)
 
 
         non_zero_indices = torch.nonzero(selected)
