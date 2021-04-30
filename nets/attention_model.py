@@ -379,7 +379,7 @@ class AttentionModel(nn.Module):
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         u = (r == 0).double()
         cost = r - torch.mul(u, torch.exp(-d))
-        cost = torch.div(cost, state.n_agents)
+        cost = cost * state.n_agents
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):
