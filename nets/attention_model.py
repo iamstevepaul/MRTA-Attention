@@ -370,16 +370,15 @@ class AttentionModel(nn.Module):
             sequences.append(selected)
             # print(state.all_finished().item() == 0)
 
-            act = state.active_tasks
             i += 1
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
         # print(state.tasks_done_success)
-        r = (1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)
-        d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
-        u = (r == 0).double()
-        cost = r - torch.mul(u, torch.exp(-d))
-        cost = cost * state.n_agents
+        cost = (1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)* state.n_agents
+        # d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
+        # u = (r == 0).double()
+        # cost = r - torch.mul(u, torch.exp(-d))
+        # cost = cost * state.n_agents
         return torch.stack(outputs, 1), torch.stack(sequences, 1), cost
 
     def sample_many(self, input, batch_rep=1, iter_rep=1):
@@ -496,7 +495,7 @@ class AttentionModel(nn.Module):
 
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)
         decision_robot_state_embedding = self.robot_taking_decision_query(decision_robot_state)
-        return torch.cat((state.current_time[:, :, None], decision_robot_state_embedding[:,None], robots_states_embedding[:,None]),-1)
+        return torch.cat((state.next_decision_time[:, :, None], decision_robot_state_embedding[:,None], robots_states_embedding[:,None]),-1)
 
 
 

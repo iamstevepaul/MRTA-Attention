@@ -16,24 +16,16 @@ class StateMRTA(NamedTuple):
     # If this state contains multiple copies (i.e. beam search) for the same instance, then for memory efficiency
     # the coords and demands tensors are not kept multiple times, so we need to use the ids to index the correct rows.
     ids: torch.Tensor  # Keeps track of original fixed data index of rows (this is basically the ids for all the location, which are considered as integers)
-    active_tasks: torch.Tensor
 
 
 
     # robot specific
     robots_initial_decision_sequence: torch.Tensor # for timestep 1, all robots need decision, so we set a sequence for this
-    robots_task_done_success: torch.Tensor # for each robot, this variable tracks the id of the task done successfully
-    robots_task_visited: torch.Tensor # keeps track of all the nodes visited by all the robots (successful or not)
-    robots_distance_travelled: torch.Tensor # keeps track of the total distance travelled by the robots (this is updated everytime a new decision is made and also during the end of the simulation)
     # robots_total_tasks_done # optional
     robots_next_decision_time: torch.Tensor # tracks the next decision time for all the robots
-    robots_range_remaining: torch.Tensor # tracks of the range remaining for all the robots
-    robots_capacity: torch.Tensor # keeps track of the capacity of the robot
     robots_current_destination: torch.Tensor
     robots_start_point: torch.Tensor
-    robot_taking_decision_range: torch.Tensor
     robots_work_capacity: torch.Tensor
-    robot_depot_association: torch.Tensor
     robots_start_location: torch.Tensor
     robots_current_destination_location: torch.Tensor
 
@@ -144,12 +136,7 @@ class StateMRTA(NamedTuple):
             cur_coord=input['depot'][:, None, :],  # Add step dimension
             i=torch.zeros(1, dtype=torch.int64, device=loc.device),  # Vector with length num_steps
             robots_initial_decision_sequence = robots_initial_decision_sequence,
-            robots_task_done_success = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
-            robots_task_visited = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
-            robots_distance_travelled  = torch.zeros((batch_size, max_n_agent), dtype=torch.float, device=loc.device),
             robots_next_decision_time =  ((robots_initial_decision_sequence > (n_agents - 1)).to(torch.float) * 10000).to(device=loc.device),
-            robots_range_remaining = torch.mul(torch.ones((batch_size, max_n_agent), dtype=torch.float, device=loc.device), max_range),
-            robots_capacity = torch.mul(torch.ones((batch_size, max_n_agent), dtype=torch.float, device=loc.device), max_capacity),
             current_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
             robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             next_decision_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
@@ -164,7 +151,6 @@ class StateMRTA(NamedTuple):
             workload=workload,
             robots_current_destination = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
-            robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
             robots_work_capacity= torch.randint(1,3,(batch_size, max_n_agent), dtype=torch.float, device=loc.device)/100,
             robots_start_location = robots_start_location,
             robots_current_destination_location = robots_start_location,
@@ -178,8 +164,6 @@ class StateMRTA(NamedTuple):
             initial_size = initial_size,
             n_depot=n_depot,
             max_speed = max_speed,
-            robot_depot_association = torch.randint(0,input['depot'].size()[1], (batch_size, max_n_agent)),
-            active_tasks = torch.arange(n_depot, initial_size).expand(batch_size, initial_size - n_depot)
         )
 
     def get_final_cost(self):
@@ -191,23 +175,22 @@ class StateMRTA(NamedTuple):
         return len
 
     def update(self, selected):
-        # print('************** New decision **************')
+        print('************** New decision **************')
         selected = selected[:, None]  # Add dimension for step
         prev_a = selected
 
         previous_time = self.current_time
 
         current_time = self.next_decision_time
-        robot_taking_decision = self.robot_taking_decision
 
         # print('Current time: ', current_time[0].item())
-        # print("Agent taking decision: ", self.robot_taking_decision)
+        print("Agent taking decision: ", self.robot_taking_decision)
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
 
         # cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
         cur_coords = self.robots_current_destination_location[self.ids, self.robot_taking_decision]
         # print(self.robots_next_decision_time)
-        # print('Selected node: ', selected)
+        print('Selected node: ', selected)
         # time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
         time = (cur_coords - self.coords[self.ids, selected]).norm(2,2)/self.max_speed
         worktime = torch.div(self.workload[self.ids.view(-1), selected.view(-1) - 1],
@@ -215,9 +198,8 @@ class StateMRTA(NamedTuple):
                                  self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)])
         # print('Time for journey: ', time)
         self.robots_next_decision_time[self.ids, self.robot_taking_decision] += torch.add(time,worktime[:, None])
-        # print('Robots next decision time: ', self.robots_next_decision_time)
-        self.robots_distance_travelled[self.ids, self.robot_taking_decision] += self.distance_matrix[
-            self.ids, self.robots_current_destination[self.ids, robot_taking_decision], selected]
+        print('Robots next decision time: ', self.robots_next_decision_time)
+
 
         non_zero_indices = torch.nonzero(selected)
         # print(non_zero_indices.size()[0])
