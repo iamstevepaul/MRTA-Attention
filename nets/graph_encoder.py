@@ -333,8 +333,10 @@ class GCAPCN_K_3_P_4_L_2(nn.Module):
         # X = torch.cat((data['loc'], data['deadline']), -1)
         X_loc = X
         distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
-        A = distance_matrix
         num_samples, num_locations, _ = X.size()
+        A = ((1 / distance_matrix) * (torch.eye(num_locations, device=distance_matrix.device).expand(
+            (num_samples, num_locations, num_locations)) - 1).to(torch.bool).to(torch.float))
+        A[A != A] = 0
         D = torch.mul(torch.eye(num_locations, device=distance_matrix.device).expand((num_samples, num_locations, num_locations)),
                       (A.sum(-1) - 1)[:, None].expand((num_samples, num_locations, num_locations)))
 
