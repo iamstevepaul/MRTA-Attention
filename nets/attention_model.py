@@ -6,7 +6,7 @@ from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, GCAPCN_K_3_P_4_L_2
+from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, GCAPCN_K_3_P_4_L_2, GCAPCN_K_3_P_4_L_2
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -375,7 +375,7 @@ class AttentionModel(nn.Module):
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
         # print(state.tasks_done_success)
-        r = 1 - torch.div(state.tasks_done_success, float(state.n_nodes))
+        r = (1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)
         d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         u = (r == 0).double()
         cost = r - torch.mul(u, torch.exp(-d))
@@ -490,8 +490,8 @@ class AttentionModel(nn.Module):
 
         working_robots = ((state.robots_initial_decision_sequence <= (state.n_agents - 1)).to(torch.float)).to(device=robots_current_destination.device)
 
-        current_robot_states = torch.cat((state.coords[state.ids,robots_current_destination], state.robots_work_capacity[:,:,None]),-1) * working_robots[:, :, None]
-        decision_robot_state = torch.cat((state.coords[state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
+        current_robot_states = torch.cat((state.robots_current_destination_location, state.robots_work_capacity[:,:,None]),-1) * working_robots[:, :, None]
+        decision_robot_state = torch.cat((state.robots_current_destination_location[state.ids, state.robot_taking_decision].view(batch_size,-1),state.robots_work_capacity[state.ids, state.robot_taking_decision]),-1) # add depot info here??
 
 
         robots_states_embedding = self.robots_state_query_embed(current_robot_states).sum(-2)

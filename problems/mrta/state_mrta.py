@@ -23,7 +23,6 @@ class StateMRTA(NamedTuple):
     # robot specific
     robots_initial_decision_sequence: torch.Tensor # for timestep 1, all robots need decision, so we set a sequence for this
     robots_task_done_success: torch.Tensor # for each robot, this variable tracks the id of the task done successfully
-    robots_task_missed_deadline: torch.Tensor # for each robot, this variable tracks the id of the task with missed deadline
     robots_task_visited: torch.Tensor # keeps track of all the nodes visited by all the robots (successful or not)
     robots_distance_travelled: torch.Tensor # keeps track of the total distance travelled by the robots (this is updated everytime a new decision is made and also during the end of the simulation)
     # robots_total_tasks_done # optional
@@ -36,6 +35,7 @@ class StateMRTA(NamedTuple):
     robots_work_capacity: torch.Tensor
     robot_depot_association: torch.Tensor
     robots_start_location: torch.Tensor
+    robots_current_destination_location: torch.Tensor
 
 
     #general - frequent changing variable
@@ -123,6 +123,7 @@ class StateMRTA(NamedTuple):
         n_depot = input['depot'].size()[1]
         batch_size, n_loc, _ = loc.size()
         robots_initial_decision_sequence = torch.from_numpy(np.arange(0, max_n_agent)).expand((batch_size, max_n_agent)).to(device=loc.device)
+        robots_start_location = (torch.randint(0, 101, (batch_size, max_n_agent, 2)).to(torch.float) / 100).to(device=loc.device)
 
 
 
@@ -144,7 +145,6 @@ class StateMRTA(NamedTuple):
             i=torch.zeros(1, dtype=torch.int64, device=loc.device),  # Vector with length num_steps
             robots_initial_decision_sequence = robots_initial_decision_sequence,
             robots_task_done_success = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
-            robots_task_missed_deadline = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robots_task_visited = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robots_distance_travelled  = torch.zeros((batch_size, max_n_agent), dtype=torch.float, device=loc.device),
             robots_next_decision_time =  ((robots_initial_decision_sequence > (n_agents - 1)).to(torch.float) * 10000).to(device=loc.device),
@@ -166,7 +166,8 @@ class StateMRTA(NamedTuple):
             robots_start_point = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
             robots_work_capacity= torch.randint(1,3,(batch_size, max_n_agent), dtype=torch.float, device=loc.device)/100,
-            robots_start_location = torch.randint(0, 101, (batch_size, max_n_agent, 2)).to(torch.float)/100,
+            robots_start_location = robots_start_location,
+            robots_current_destination_location = robots_start_location,
             depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             max_capacity = max_capacity,
             n_agents = n_agents,
@@ -203,10 +204,12 @@ class StateMRTA(NamedTuple):
         # print("Agent taking decision: ", self.robot_taking_decision)
         # print("Agent range remaining: ", robots_range_remaining[0, robot_taking_decision[0].item()].item())
 
-        cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        # cur_coords = self.coords[self.ids, self.robots_current_destination[self.ids, self.robot_taking_decision]]
+        cur_coords = self.robots_current_destination_location[self.ids, self.robot_taking_decision]
         # print(self.robots_next_decision_time)
         # print('Selected node: ', selected)
-        time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
+        # time = self.time_matrix[self.ids, self.robots_current_destination[self.ids,self.robot_taking_decision[:]], selected]
+        time = (cur_coords - self.coords[self.ids, selected]).norm(2,2)/self.max_speed
         worktime = torch.div(self.workload[self.ids.view(-1), selected.view(-1) - 1],
                              self.robots_work_capacity[
                                  self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)])
@@ -245,7 +248,7 @@ class StateMRTA(NamedTuple):
             visited_ = mask_long_scatter(self.visited_, prev_a - 1)
 
         new_cur_coord = self.coords[self.ids, selected]
-
+        self.robots_current_destination_location[self.ids, self.robot_taking_decision] = new_cur_coord
         lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
         visited_[:,:,0] = 0
 
