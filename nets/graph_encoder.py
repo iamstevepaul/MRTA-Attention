@@ -328,7 +328,7 @@ class GCAPCN_K_3_P_2_L_2(nn.Module):
         self.activ = nn.LeakyReLU()
 
     def forward(self, data, mask=None):
-        X = torch.cat((data['loc'], data['deadline'][:, :, None], data['workload'][:, :, None]), -1)
+        X = torch.cat((data['loc'], data['deadline'][:, :, None]), -1)
         # X = torch.cat((data['loc'], data['deadline']), -1)
         X_loc = X
         distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
@@ -676,7 +676,7 @@ class GCAPCN_K_3_P_4_L_3(nn.Module):
 
         F2_squared = torch.mul(F2[:, :, :], F2[:, :, :])
         F2_cube = torch.mul(F2[:, :, :], F2_squared[:, :, :])
-        F2_quad = torch.mul(F1[:, :, :], F2_cube[:, :, :])
+        F2_quad = torch.mul(F2[:, :, :], F2_cube[:, :, :])
         g_L3_1 = self.W_L_3_G1(torch.cat((F2[:, :, :],
                                           torch.matmul(L, F2)[:, :, :],
                                           torch.matmul(L_squared, F2)[:, :, :],
@@ -704,11 +704,229 @@ class GCAPCN_K_3_P_4_L_3(nn.Module):
                                           ),
                                          -1))
 
-        F3 = self.activ(torch.cat((g_L3_1, g_L3_2, g_L3_3, g_L3_4), -1)) + F1
+        F3 = self.activ(torch.cat((g_L3_1, g_L3_2, g_L3_3, g_L3_4), -1)) + F2
         F3 = batch_norm(F3)
 
 
         F_final = self.activ(self.W_F(F3))
+
+        init_depot_embed = self.init_embed_depot(data['depot'])
+        h = torch.cat((init_depot_embed, F_final), 1)
+        return (
+            h,  # (batch_size, graph_size, embed_dim)
+            h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
+        )
+
+
+
+class GCAPCN_K_3_P_4_L_4(nn.Module):
+
+    def __init__(self,
+                 n_layers=2,
+                 n_dim=128,
+                 n_p=4,
+                 node_dim=3,
+                 n_K=3
+                 ):
+        super(GCAPCN_K_3_P_4_L_4, self).__init__()
+        self.n_layers = n_layers
+        self.n_dim = n_dim
+        self.n_p = n_p
+        self.n_K = n_K
+        self.node_dim = node_dim
+        self.init_embed = nn.Linear(node_dim, n_dim * n_p)
+        self.init_embed_depot = nn.Linear(2, n_dim)
+
+        self.W_L_1_G1 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_1_G2 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_1_G3 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_1_G4 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+
+        self.W_L_2_G1 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_2_G2 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_2_G3 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_2_G4 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+
+        self.W_L_3_G1 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_3_G2 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_3_G3 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_3_G4 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+
+        self.W_L_4_G1 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_4_G2 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_4_G3 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+        self.W_L_4_G4 = nn.Linear(n_dim * (n_K + 1) * n_p, n_dim)
+
+        self.normalization_1 = nn.BatchNorm1d(n_dim * n_p)
+        self.normalization_2 = nn.BatchNorm1d(n_dim * n_p)
+        self.normalization_3 = nn.BatchNorm1d(n_dim * n_p)
+        self.normalization_4 = nn.BatchNorm1d(n_dim * n_p)
+
+        self.W_F = nn.Linear(n_dim * n_p, n_dim)
+
+        self.activ = nn.LeakyReLU()
+
+    def forward(self, data, mask=None):
+        X = torch.cat((data['loc'], data['deadline'][:, :, None]), -1)
+        # X = torch.cat((data['loc'], data['deadline']), -1)
+        X_loc = X
+        distance_matrix = (((X_loc[:, :, None] - X_loc[:, None]) ** 2).sum(-1)) ** .5
+        num_samples, num_locations, _ = X.size()
+        A = ((1 / distance_matrix) * (torch.eye(num_locations, device=distance_matrix.device).expand(
+            (num_samples, num_locations, num_locations)) - 1).to(torch.bool).to(torch.float))
+        A[A != A] = 0
+        D = torch.mul(torch.eye(num_locations, device=distance_matrix.device).expand((num_samples, num_locations, num_locations)),
+                      (A.sum(-1) - 1)[:, None].expand((num_samples, num_locations, num_locations)))
+
+        # Layer 1
+
+        # p = 3
+        F0 = self.init_embed(X)
+        F0_squared = torch.mul(F0[:, :, :], F0[:, :, :])
+        F0_cube = torch.mul(F0[:, :, :], F0_squared[:, :, :])
+        F0_quad = torch.mul(F0[:, :, :], F0_cube[:, :, :])
+
+        # K = 3
+        L = D - A
+        L_squared = torch.matmul(L, L)
+        L_cube = torch.matmul(L, L_squared)
+
+        g_L1_1 = self.W_L_1_G1(torch.cat((F0[:, :, :],
+                                          torch.matmul(L, F0)[:, :, :],
+                                          torch.matmul(L_squared, F0)[:, :, :],
+                                          torch.matmul(L_cube, F0)[:, :, :]
+                                          ),
+                                         -1))
+        g_L1_2 = self.W_L_1_G2(torch.cat((F0_squared[:, :, :],
+                                          torch.matmul(L, F0_squared)[:, :, :],
+                                          torch.matmul(L_squared, F0_squared)[:, :, :],
+                                          torch.matmul(L_cube, F0_squared)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L1_3 = self.W_L_1_G3(torch.cat((F0_cube[:, :, :],
+                                          torch.matmul(L, F0_cube)[:, :, :],
+                                          torch.matmul(L_squared, F0_cube)[:, :, :],
+                                          torch.matmul(L_cube, F0_cube)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L1_4 = self.W_L_1_G4(torch.cat((F0_quad[:, :, :],
+                                          torch.matmul(L, F0_quad)[:, :, :],
+                                          torch.matmul(L_squared, F0_quad)[:, :, :],
+                                          torch.matmul(L_cube, F0_quad)[:, :, :]
+                                          ),
+                                         -1))
+
+        F1 = torch.cat((g_L1_1, g_L1_2, g_L1_3, g_L1_4), -1)
+        F1 = self.activ(F1) + F0
+        F1 = batch_norm(F1)
+
+
+        # Layer 2
+
+        F1_squared = torch.mul(F1[:, :, :], F1[:, :, :])
+        F1_cube = torch.mul(F1[:, :, :], F1_squared[:, :, :])
+        F1_quad = torch.mul(F1[:, :, :], F1_cube[:, :, :])
+        g_L2_1 = self.W_L_2_G1(torch.cat((F1[:, :, :],
+                                          torch.matmul(L, F1)[:, :, :],
+                                          torch.matmul(L_squared, F1)[:, :, :],
+                                          torch.matmul(L_cube, F1)[:, :, :]
+                                          ),
+                                         -1))
+        g_L2_2 = self.W_L_2_G2(torch.cat((F1_squared[:, :, :],
+                                          torch.matmul(L, F1_squared)[:, :, :],
+                                          torch.matmul(L_squared, F1_squared)[:, :, :],
+                                          torch.matmul(L_cube, F1_squared)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L2_3 = self.W_L_2_G3(torch.cat((F1_cube[:, :, :],
+                                          torch.matmul(L, F1_cube)[:, :, :],
+                                          torch.matmul(L_squared, F1_cube)[:, :, :],
+                                          torch.matmul(L_cube, F1_cube)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L2_4 = self.W_L_2_G4(torch.cat((F1_quad[:, :, :],
+                                          torch.matmul(L, F1_quad)[:, :, :],
+                                          torch.matmul(L_squared, F1_quad)[:, :, :],
+                                          torch.matmul(L_cube, F1_quad)[:, :, :]
+                                          ),
+                                         -1))
+
+
+        F2 = self.activ(torch.cat((g_L2_1, g_L2_2, g_L2_3, g_L2_4), -1)) + F1
+        F2 = batch_norm(F2)
+
+        F2_squared = torch.mul(F2[:, :, :], F2[:, :, :])
+        F2_cube = torch.mul(F2[:, :, :], F2_squared[:, :, :])
+        F2_quad = torch.mul(F2[:, :, :], F2_cube[:, :, :])
+        g_L3_1 = self.W_L_3_G1(torch.cat((F2[:, :, :],
+                                          torch.matmul(L, F2)[:, :, :],
+                                          torch.matmul(L_squared, F2)[:, :, :],
+                                          torch.matmul(L_cube, F2)[:, :, :]
+                                          ),
+                                         -1))
+        g_L3_2 = self.W_L_3_G2(torch.cat((F2_squared[:, :, :],
+                                          torch.matmul(L, F2_squared)[:, :, :],
+                                          torch.matmul(L_squared, F2_squared)[:, :, :],
+                                          torch.matmul(L_cube, F2_squared)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L3_3 = self.W_L_3_G3(torch.cat((F2_cube[:, :, :],
+                                          torch.matmul(L, F2_cube)[:, :, :],
+                                          torch.matmul(L_squared, F2_cube)[:, :, :],
+                                          torch.matmul(L_cube, F2_cube)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L3_4 = self.W_L_3_G4(torch.cat((F2_quad[:, :, :],
+                                          torch.matmul(L, F2_quad)[:, :, :],
+                                          torch.matmul(L_squared, F2_quad)[:, :, :],
+                                          torch.matmul(L_cube, F2_quad)[:, :, :]
+                                          ),
+                                         -1))
+
+        F3 = self.activ(torch.cat((g_L3_1, g_L3_2, g_L3_3, g_L3_4), -1)) + F2
+        F3 = batch_norm(F3)
+
+        F3_squared = torch.mul(F3[:, :, :], F3[:, :, :])
+        F3_cube = torch.mul(F3[:, :, :], F3_squared[:, :, :])
+        F3_quad = torch.mul(F3[:, :, :], F3_cube[:, :, :])
+        g_L4_1 = self.W_L_4_G1(torch.cat((F3[:, :, :],
+                                          torch.matmul(L, F3)[:, :, :],
+                                          torch.matmul(L_squared, F3)[:, :, :],
+                                          torch.matmul(L_cube, F3)[:, :, :]
+                                          ),
+                                         -1))
+        g_L4_2 = self.W_L_4_G2(torch.cat((F3_squared[:, :, :],
+                                          torch.matmul(L, F3_squared)[:, :, :],
+                                          torch.matmul(L_squared, F3_squared)[:, :, :],
+                                          torch.matmul(L_cube, F3_squared)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L4_3 = self.W_L_4_G3(torch.cat((F3_cube[:, :, :],
+                                          torch.matmul(L, F3_cube)[:, :, :],
+                                          torch.matmul(L_squared, F3_cube)[:, :, :],
+                                          torch.matmul(L_cube, F3_cube)[:, :, :]
+                                          ),
+                                         -1))
+
+        g_L4_4 = self.W_L_4_G4(torch.cat((F3_quad[:, :, :],
+                                          torch.matmul(L, F3_quad)[:, :, :],
+                                          torch.matmul(L_squared, F3_quad)[:, :, :],
+                                          torch.matmul(L_cube, F3_quad)[:, :, :]
+                                          ),
+                                         -1))
+
+        F4 = self.activ(torch.cat((g_L4_1, g_L4_2, g_L4_3, g_L4_4), -1)) + F3
+        F4 = batch_norm(F4)
+
+
+        F_final = self.activ(self.W_F(F4))
 
         init_depot_embed = self.init_embed_depot(data['depot'])
         h = torch.cat((init_depot_embed, F_final), 1)

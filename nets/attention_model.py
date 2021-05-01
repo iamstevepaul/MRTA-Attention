@@ -6,7 +6,7 @@ from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, GCAPCN_K_3_P_4_L_2, GCAPCN_K_3_P_4_L_3, GCAPCN_K_3_P_2_L_2
+from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, GCAPCN_K_3_P_4_L_2, GCAPCN_K_3_P_4_L_3, GCAPCN_K_3_P_2_L_2, GCAPCN_K_3_P_4_L_4
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -114,9 +114,9 @@ class AttentionModel(nn.Module):
         #     node_dim=4
         # )
 
-        self.embedder = GCAPCN_K_3_P_2_L_2(
+        self.embedder = GCAPCN_K_3_P_4_L_4(
             n_dim=embedding_dim,
-            node_dim=4
+            node_dim=3
         )
 
         # self.embedder = GCAPCN_K_3_P_4_L_2()
@@ -374,7 +374,8 @@ class AttentionModel(nn.Module):
         # print(state.tasks_done_success, cost)
         # Collected lists, return Tensor
         # print(state.tasks_done_success)
-        cost = (1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)* state.n_agents
+        # cost =  state.n_agents/state.tasks_done_success.to(torch.float) #(1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)* state.n_agents
+        cost = ((state.tasks_finish_time - state.deadline)*(state.tasks_finish_time > state.deadline).to(torch.float)).sum(-1)
         # d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # cost = r - torch.mul(u, torch.exp(-d))

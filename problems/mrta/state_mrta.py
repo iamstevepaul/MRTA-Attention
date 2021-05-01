@@ -11,6 +11,7 @@ class StateMRTA(NamedTuple):
     time_matrix: torch.Tensor # time matrix between all the coordinates using the speed of the agents
     deadline: torch.Tensor # deadline for all the tasks (special case for the depot, keep a very large time)
     workload: torch.Tensor
+    tasks_finish_time: torch.Tensor
     # demand: torch.Tensor # we do not need this, we can remove this or set the demand as 1 or something equal to the quantity for 1 time delivery
 
     # If this state contains multiple copies (i.e. beam search) for the same instance, then for memory efficiency
@@ -148,6 +149,7 @@ class StateMRTA(NamedTuple):
             distance_matrix = distance_matrix,
             time_matrix = time_matrix,
             deadline = deadline,
+            tasks_finish_time = torch.zeros((batch_size, n_loc), dtype=torch.float, device=loc.device),
             workload=workload,
             robots_current_destination = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
@@ -206,6 +208,7 @@ class StateMRTA(NamedTuple):
         if non_zero_indices.size()[0] > 0:
             deadlines = self.deadline[self.ids.view(-1), selected.view(-1) - 1]
             dest_time = self.robots_next_decision_time[self.ids.view(-1), self.robot_taking_decision[self.ids].view(-1)]
+            self.tasks_finish_time[self.ids, selected - 1] = dest_time[:, None]
 
             feas_ids = (deadlines > dest_time).nonzero()
             combined = torch.cat((non_zero_indices[:,0], feas_ids[:,0]))
