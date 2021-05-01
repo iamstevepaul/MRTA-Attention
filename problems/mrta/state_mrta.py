@@ -231,7 +231,7 @@ class StateMRTA(NamedTuple):
 
         new_cur_coord = self.coords[self.ids, selected]
         self.robots_current_destination_location[self.ids, self.robot_taking_decision] = new_cur_coord
-        lengths = self.lengths + (new_cur_coord - cur_coords).norm(p=2, dim=-1)
+        lengths = self.lengths #+ (new_cur_coord - cur_coords).norm(p=2, dim=-1)
         visited_[:,:,0] = 0
 
         return self._replace(
