@@ -375,7 +375,7 @@ class AttentionModel(nn.Module):
         # Collected lists, return Tensor
         # print(state.tasks_done_success)
         # cost =  state.n_agents/state.tasks_done_success.to(torch.float) #(1 - torch.div(state.tasks_done_success, float(state.n_nodes)))*float(state.n_nodes)* state.n_agents
-        cost = ((state.tasks_finish_time - state.deadline)*(state.tasks_finish_time > state.deadline).to(torch.float)).sum(-1)
+        cost = torch.div(state.tasks_finish_time, state.deadline).sum(-1) #((state.tasks_finish_time - state.deadline)*(state.tasks_finish_time > state.deadline).to(torch.float)).sum(-1)
         # d = torch.div(state.lengths, float(state.n_nodes) * 1.414)
         # u = (r == 0).double()
         # cost = r - torch.mul(u, torch.exp(-d))
