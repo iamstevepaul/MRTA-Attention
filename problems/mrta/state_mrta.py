@@ -106,7 +106,7 @@ class StateMRTA(NamedTuple):
         deadline = input['deadline']
         workload = input['workload']
         n_agents = input['n_agents'].reshape(-1)[:, None]
-        max_n_agent = input['n_agents'].max().item()
+        max_n_agent = input['max_n_agents'][0, 0, 0].item()
         max_range = input['max_range'][0].item()
         max_capacity = input['max_capacity'][0].item()
         max_speed = input['max_speed'][0].item()
@@ -116,7 +116,7 @@ class StateMRTA(NamedTuple):
         n_depot = input['depot'].size()[1]
         batch_size, n_loc, _ = loc.size()
         robots_initial_decision_sequence = torch.from_numpy(np.arange(0, max_n_agent)).expand((batch_size, max_n_agent)).to(device=loc.device)
-        robots_start_location = (torch.randint(0, 101, (batch_size, max_n_agent, 2)).to(torch.float) / 100).to(device=loc.device)
+        robots_start_location = input['robots_start_location'] #(torch.randint(0, 101, (batch_size, max_n_agent, 2)).to(torch.float) / 100).to(device=loc.device)
 
 
 
@@ -153,7 +153,7 @@ class StateMRTA(NamedTuple):
             workload=workload,
             robots_current_destination = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robots_start_point = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
-            robots_work_capacity= torch.randint(1,3,(batch_size, max_n_agent), dtype=torch.float, device=loc.device)/100,
+            robots_work_capacity= input['robots_work_capacity'],
             robots_start_location = robots_start_location,
             robots_current_destination_location = robots_start_location,
             depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),

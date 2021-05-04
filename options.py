@@ -18,7 +18,7 @@ def get_options(args=None):
     parser.add_argument('--n_depot', type=int, default=1, help="Number of depot")
     parser.add_argument('--agent_max_range', type=int, default=4, help="Max range for the robot")
     parser.add_argument('--agent_max_capacity', type=int, default=10, help="Max capacity for the robot")
-    parser.add_argument('--agent_max_speed', type=int, default=.01, help="Max speed for the robot")
+    parser.add_argument('--agent_max_speed', type=int, default=.1, help="Max speed for the robot")
     parser.add_argument('--enable_capacity_constraint', type=bool, default=False, help="Set it to true to enable capacity constraint")
     parser.add_argument('--enable_range_constraint', type=bool, default=False, help="Set it true to enable range constraint")
     parser.add_argument('--deadline_min', type=int, default=40,
