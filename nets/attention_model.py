@@ -463,8 +463,10 @@ class AttentionModel(nn.Module):
         # Embedding of previous node + remaining capacity
 
         robots_current_destination = state.robots_current_destination.clone()
+        working_robots = ((state.robots_initial_decision_sequence <= (state.n_agents - 1)).to(torch.float)).to(
+            device=robots_current_destination.device)
 
-        current_robot_states = state.coords[state.ids, robots_current_destination]
+        current_robot_states = state.coords[state.ids, robots_current_destination] * working_robots[:, :, None]
         decision_robot_state = state.coords[
             state.ids, state.robots_current_destination[state.ids, state.robot_taking_decision]].view(batch_size,
                                                                                                       -1)  # add depot info here??

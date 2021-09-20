@@ -120,6 +120,11 @@ class StateMRTA(NamedTuple):
         enable_range_constraint=input['enable_range_constraint'][0].item()
         initial_size = input['initial_size'][0].item()
         n_depot = input['depot'].size()[1]
+        max_n_agent = 40
+        batch_size, n_loc, _ = loc.size()
+        robots_initial_decision_sequence = torch.from_numpy(np.arange(0, max_n_agent)).expand(
+            (batch_size, max_n_agent)).to(device=loc.device)
+
 
 
         # n_nodes = torch.tensor(loc.size()[1], dtype=torch.uint8)
@@ -141,14 +146,16 @@ class StateMRTA(NamedTuple):
             lengths=torch.zeros(batch_size, 1, device=loc.device),
             cur_coord=input['depot'][:, None, :],  # Add step dimension
             i=torch.zeros(1, dtype=torch.int64, device=loc.device),  # Vector with length num_steps
-            robots_initial_decision_sequence = torch.from_numpy(np.arange(0, n_agents)).to(device=loc.device),#torch.from_numpy(np.arange(0, n_agents)),
-            robots_task_done_success = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
-            robots_task_missed_deadline = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
-            robots_task_visited = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
-            robots_distance_travelled  = torch.zeros((batch_size, n_agents), dtype=torch.float, device=loc.device),
-            robots_next_decision_time =  torch.zeros((batch_size, n_agents), dtype=torch.float, device=loc.device),
-            robots_range_remaining = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float, device=loc.device), max_range),
-            robots_capacity = torch.mul(torch.ones((batch_size,n_agents), dtype=torch.float, device=loc.device), max_capacity),
+            robots_initial_decision_sequence = robots_initial_decision_sequence,#torch.from_numpy(np.arange(0, n_agents)),
+            robots_next_decision_time=((robots_initial_decision_sequence > (n_agents - 1)).to(torch.float) * 10000).to(
+                device=loc.device),
+            robots_task_done_success = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
+            robots_task_missed_deadline = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
+            robots_task_visited = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
+            robots_distance_travelled  = torch.zeros((batch_size, max_n_agent), dtype=torch.float, device=loc.device),
+            # robots_next_decision_time =  torch.zeros((batch_size, n_agents), dtype=torch.float, device=loc.device),
+            robots_range_remaining = torch.mul(torch.ones((batch_size,max_n_agent), dtype=torch.float, device=loc.device), max_range),
+            robots_capacity = torch.mul(torch.ones((batch_size,max_n_agent), dtype=torch.float, device=loc.device), max_capacity),
             current_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
             robot_taking_decision = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             next_decision_time = torch.zeros((batch_size, 1), dtype=torch.float, device=loc.device),
@@ -160,8 +167,8 @@ class StateMRTA(NamedTuple):
             distance_matrix = distance_matrix,
             time_matrix = time_matrix,
             deadline = deadline,
-            robots_current_destination = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
-            robots_start_point = torch.zeros((batch_size, n_agents), dtype=torch.int64, device=loc.device),
+            robots_current_destination = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
+            robots_start_point = torch.zeros((batch_size, max_n_agent), dtype=torch.int64, device=loc.device),
             robot_taking_decision_range = torch.mul(torch.ones(batch_size, 1, dtype=torch.float, device=loc.device), max_range),
             depot = torch.zeros((batch_size, 1), dtype=torch.int64, device=loc.device),
             max_capacity = max_capacity,
@@ -173,7 +180,7 @@ class StateMRTA(NamedTuple):
             initial_size = initial_size,
             n_depot=n_depot,
             max_speed = max_speed,
-            robot_depot_association = torch.randint(0,input['depot'].size()[1], (batch_size, n_agents)),
+            robot_depot_association = torch.randint(0,input['depot'].size()[1], (batch_size, max_n_agent)),
             active_tasks = torch.arange(n_depot, initial_size).expand(batch_size, initial_size - n_depot)
         )
 
