@@ -221,6 +221,10 @@ class CCN3(nn.Module):
         self.init_embed_depot = nn.Linear(2, embed_dim)
         self.final_embedding = nn.Linear(embed_dim, embed_dim)
 
+        self.init_embed_L2 = nn.Linear(embed_dim, embed_dim)
+        self.neighbour_encode_L2 = nn.Linear(embed_dim, embed_dim)
+        self.final_embedding_L2 = nn.Linear(embed_dim, embed_dim)
+
     def forward(self, X, mask=None):
         x = torch.cat((X['loc'], X['deadline'][:, :, None]), 2)
         x2 = x[:, :, 0:2]
@@ -237,8 +241,15 @@ class CCN3(nn.Module):
         concat = torch.cat((F0_embedding_3d[:, :, None, :], neighbour_delta_embedding), 2)
 
         F_embed_final = self.final_embedding(concat).sum(dim=2)
+
+        xl2 = self.init_embed_L2(F_embed_final)
+        neighbour_delta_L2 = F_embed_final[:, neighbors][0] - F_embed_final[:, :, None, :]
+        neighbour_delta_embedding_L2 = self.neighbour_encode_L2(neighbour_delta_L2)
+        concat_L2 = torch.cat((xl2[:, :, None, :], neighbour_delta_embedding_L2), 2)
+        F_embed_final_L2 = self.final_embedding_L2(concat_L2).sum(dim=2)
+
         init_depot_embed = self.init_embed_depot(X['depot'])
-        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        h = torch.cat((init_depot_embed, F_embed_final_L2), -2)
         return (
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
