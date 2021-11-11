@@ -6,7 +6,7 @@ from typing import NamedTuple
 from utils.tensor_functions import compute_in_batches
 import time
 
-from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN
+from nets.graph_encoder import GraphAttentionEncoder, CCN3, GCAPCN, SimpleNN
 from torch.nn import DataParallel
 from utils.beam_search import CachedLookup
 from utils.functions import sample_many
@@ -109,7 +109,12 @@ class AttentionModel(nn.Module):
         #     normalization=normalization
         # ) ## this will be changed for CCN
 
-        self.embedder = CCN3(
+        # self.embedder = CCN3(
+        #     embed_dim=embedding_dim,
+        #     node_dim=3
+        # )
+
+        self.embedder = SimpleNN(
             embed_dim=embedding_dim,
             node_dim=3
         )
@@ -225,7 +230,7 @@ class AttentionModel(nn.Module):
 
         return torch.cat(
             (
-                self.init_embed_depot(input['depot'])[:, None, :],
+                self.init_embed_depot(input['depot'])[:, :],
                 self.init_embed(torch.cat((
                     input['loc'],
                     *(input[feat][:, :, None] for feat in features)
@@ -388,8 +393,8 @@ class AttentionModel(nn.Module):
         return sample_many(
             lambda input: self._inner_eval(*input),  # Need to unpack tuple into arguments
             lambda input, pi: self.problem.get_costs(input[0], pi),  # Don't need embeddings as input to get_costs
-            (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
-            # (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
+            # (input, self.embedder(input)[0]),  # Pack input with embeddings (additional input) - for CCN encoding
+            (input, self.embedder(self._init_embed(input))[0]), ## for MHA encoding
             batch_rep, iter_rep
         )
 

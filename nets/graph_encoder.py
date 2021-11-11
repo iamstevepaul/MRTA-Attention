@@ -234,7 +234,7 @@ class CCN3(nn.Module):
         # F0_embedding.reshape([1])
 
         dist_mat = (x2[:, None] - x2[:, :, None]).norm(dim=-1, p=2)  ## device to cuda to be added
-        neighbors = dist_mat.sort().indices[:, :, :6]  # for 6 neighbours
+        neighbors = dist_mat.sort().indices[:, :, :10]  # for 6 neighbours
         neighbour = x[:, neighbors][0]
         neighbour_delta = neighbour - x[:, :, None, :]
         neighbour_delta_embedding = self.neighbour_encode(neighbour_delta)
@@ -254,6 +254,30 @@ class CCN3(nn.Module):
             h,  # (batch_size, graph_size, embed_dim)
             h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
         )
+
+class SimpleNN(nn.Module):
+
+    def __init__(self, node_dim = 3,
+                 embed_dim = 128):
+        super(SimpleNN, self).__init__()
+        self.init_embed = nn.Linear(node_dim, embed_dim)
+        self.init_embed_depot = nn.Linear(2, embed_dim)
+        self.final_embedding = nn.Linear(embed_dim, embed_dim)
+
+    def forward(self, X):
+        x = torch.cat((X['loc'], X['deadline'][:, :, None]), 2)
+        F0_embedding_3d = self.init_embed(x)
+        F_embed_final = self.final_embedding(F0_embedding_3d)
+
+        init_depot_embed = self.init_embed_depot(X['depot'])
+        h = torch.cat((init_depot_embed, F_embed_final), -2)
+        return (
+            h,  # (batch_size, graph_size, embed_dim)
+            h.mean(dim=1),  # average to get embedding of graph, (batch_size, embed_dim)
+        )
+
+
+
 
 class GCAPCN(nn.Module):
 

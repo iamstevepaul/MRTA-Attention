@@ -113,11 +113,11 @@ def eval_dataset(dataset_path, width, softmax_temp, opts):
     # assert opts.f or not os.path.isfile(
     #     out_file), "File already exists! Try running with -f option to overwrite."
     #
-    n_nodes = 1000
-    n_agents = 200
-    out_file = 'results/mrta/mrta_'+str(n_nodes)+'_nodes_'+str(n_agents)+'_agents_GCAPCN.pkl'
-    # out_file = 'randa.pkl'
-    save_dataset((results, parallelism), out_file)
+    # n_nodes = 1000
+    # n_agents = 200
+    # out_file = 'results/mrta/mrta_'+str(n_nodes)+'_nodes_'+str(n_agents)+'_agents_GCAPCN.pkl'
+    # # out_file = 'randa.pkl'
+    # save_dataset((results, parallelism), out_file)
 
     return costs, tours, durations
 
@@ -196,6 +196,10 @@ def _eval_dataset(model, dataset, width, softmax_temp, opts, device):
     # plot tasks done here
     # plt.plot(tasks_done_total)
     # plt.show()
+    gt = []
+    for re in results:
+        gt.append(re["cost"])
+    gt = np.array(gt)
     return results
 
 
@@ -220,7 +224,7 @@ if __name__ == "__main__":
                         help='Beam search (bs), Sampling (sample) or Greedy (greedy)')
     parser.add_argument('--softmax_temperature', type=parse_softmax_temperature, default=1,
                         help="Softmax temperature (sampling or bs)")
-    parser.add_argument('--model', default='outputs/mrta_200_gcapcn', type=str)
+    parser.add_argument('--model', default='outputs/mrta_200_AM_test_ready', type=str)
     parser.add_argument('--no_cuda', action='store_true', help='Disable CUDA')
     parser.add_argument('--no_progress_bar', action='store_true', help='Disable progress bar')
     parser.add_argument('--compress_mask', action='store_true', help='Compress mask into long')

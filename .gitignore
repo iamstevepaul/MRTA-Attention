@@ -94,6 +94,11 @@ results/
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
+.DS_Store/
+.idea/workspace.xml
+outputs/.DS_Store
+
+
 
 # Celery stuff
 celerybeat-schedule
