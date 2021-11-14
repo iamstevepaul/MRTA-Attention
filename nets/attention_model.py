@@ -99,6 +99,8 @@ class AttentionModel(nn.Module):
         self.init_embed_depot = nn.Linear(2, embedding_dim)
 
         self.init_embed = nn.Linear(node_dim, embedding_dim)
+        self.decoder_nn = nn.Linear(2*embedding_dim, embedding_dim)
+        self.decoder_activ = nn.LeakyReLU()
 
 
 
@@ -350,7 +352,8 @@ class AttentionModel(nn.Module):
 
             # Only the required ones goes here, so we should
             #  We need a variable that track which all tasks are available
-            log_p, mask = self._get_log_p(fixed, state)
+            # log_p, mask = self._get_log_p(fixed, state)
+            log_p, mask = self._get_log_p_nn(fixed, state)
 
             # Select the indices of the next nodes in the sequences, result (batch_size) long
             selected = self._select_node(log_p.exp()[:, 0, :], mask[:, 0, :])  # Squeeze out steps dimension
@@ -451,6 +454,28 @@ class AttentionModel(nn.Module):
             log_p,
             torch.arange(log_p.size(-1), device=log_p.device, dtype=torch.int64).repeat(log_p.size(0), 1)[:, None, :]
         )
+
+    def _get_log_p_nn(self, fixed, state, normalize=True):
+        query = fixed.context_node_projected + \
+                self.project_step_context(self._get_parallel_step_context(fixed.node_embeddings,
+                                                                          state))  ### this has to be cross checked for the context inputs
+
+        concatenated = torch.cat((fixed.node_embeddings,query.expand(fixed.node_embeddings.shape)),2)
+        log_p = self.decoder_activ(self.decoder_nn(concatenated).sum(-1))
+        mask = state.get_mask()
+        if normalize:
+            log_p = torch.log_softmax(log_p / self.temp, dim=-1)
+
+        log_p = log_p[:, None]
+
+        if self.tanh_clipping > 0:
+            logits = torch.tanh(log_p) * self.tanh_clipping
+        if self.mask_logits:
+            logits[mask] = -math.inf
+
+        assert not torch.isnan(log_p).any()
+
+        return logits, mask
 
     def _get_log_p(self, fixed, state, normalize=True):
 
